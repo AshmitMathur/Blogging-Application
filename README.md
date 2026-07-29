@@ -1,4 +1,4 @@
-# 📝Blogging Platform
+# 📝AI Publishing Platform
 
 A full-stack blogging platform built with the **MERN Stack** that allows users to browse blogs, search by category, read articles, and leave comments. The application also includes an admin dashboard for managing blogs and integrates AI-powered content generation and ImageKit for optimized image hosting.
 
