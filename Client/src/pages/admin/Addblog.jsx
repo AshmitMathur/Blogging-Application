@@ -80,7 +80,6 @@ const Addblog = () => {
             console.error(error);
 
             if (error.response) {
-                console.log(error.response.data);
                 toast.error(error.response.data.message);
             } else {
                 toast.error(error.message);
@@ -91,7 +90,6 @@ const Addblog = () => {
     };
 
     const generateContent = async () => {
-        // AI generation code
         if(!title) return toast.error("Please enter A Title");
         try {
             setLoading(true);
@@ -168,8 +166,8 @@ const Addblog = () => {
                     <div ref={editorRef}></div>
 
                     {Loading && (
-                        <div className='absolute right-0 top-0 bottom-0 left-0 flex-items-center justify-center'>
-                            <div className='w-8 h-8 rounded-full border-2 border-t white animate-spin'>
+                        <div className='absolute inset-0 z-50 bg-gray-200/50 flex items-center justify-center'>
+                            <div className='w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin'>
 
                             </div>
                         </div>

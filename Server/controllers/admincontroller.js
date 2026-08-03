@@ -13,7 +13,7 @@ export const adminLogin = async (req, res) => {
         const token = jwt.sign({email}, process.env.JWT_SECRET)
         res.json({success: true, token})
     } catch (error) {
-        res.json({sucess: false, message: error.message})
+        res.json({success: false, message: error.message})
     }
 }
 
@@ -22,16 +22,16 @@ export const getAllBlogsAdmin = async(req, res) => {
         const blogs = await Blog.find({}).sort({createdAt: -1});
         res.json({success: true, blogs});
     } catch (error) {
-        res.json({sucess: false, message: error.message})
+        res.json({success: false, message: error.message})
     }
 }
 
 export const getAllComments = async(req, res) =>{
     try {
         const comments = await Comment.find({}).populate("blog").sort({createdAt: -1});
-        res.json({sucess: true, comments});
+        res.json({success: true, comments});
     } catch (error) {
-        res.json({sucess: false, message: error.message})
+        res.json({success: false, message: error.message})
     }
 }
 
@@ -47,7 +47,7 @@ export const getDashboard = async(req, res)=> {
         }
         res.json({success: true, dashboardData});
     } catch (error) {
-        res.json({sucess: false, message: error.message})
+        res.json({success: false, message: error.message})
     }
 }
 

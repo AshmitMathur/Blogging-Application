@@ -1,6 +1,7 @@
 import React from 'react'
 import { assets } from '../../Assets/assets';
 import { useAppContext } from '../../../context/AppContext';
+import toast from 'react-hot-toast';
 
 const BlogTableItem = ({blog, fetchBlogs, index}) => {
 
@@ -46,10 +47,9 @@ const BlogTableItem = ({blog, fetchBlogs, index}) => {
       <td className='px-2 py-4'> {title}</td>
       <td className='px-2 py-4 max-sm:hidden'> {BlogDate.toDateString()}</td>
       <td className='px-2 py-4 max-sm:hidden'>
-        <p className={`${blog.isPublished ? "text-green-600" : "text-orange-700"}`}></p>
-        <p>{blog.isPublished ? "Published" : "UnPublished"}</p>
+        <p className={`${blog.isPublished ? "text-green-600" : "text-orange-700"}`}> {blog.isPublished ? "Published" : "UnPublished"}</p>
       </td>
-      <td className='px-2 py-4 flex text-xs-gap-3'>
+      <td className='px-2 py-4 flex gap-3 text-xs'>
         <button onClick={togglePublish} className='border px-2 py-0.5 mt-1 rounded cursor-pointer'>{blog.isPublished ? "UnPublish" : "Publish"}</button>
         <img src={assets.cross_icon} className='w-8 hover:scale-110 transition-all cursor-pointer' alt=""  onClick={deleteBlog}/>
       </td>

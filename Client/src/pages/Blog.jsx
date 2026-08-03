@@ -20,14 +20,20 @@ const Blog = () => {
   const [name, setName] = useState('')
   const [content, setContent] = useState('')
 
-  const fetchBlogData = async ()=> {
+const fetchBlogData = async () => {
     try {
-      const {data} = await axios.get(`/api/blog/${id}`)
-      data.success ? setData(data.blog) : toast.error(data.message);
+        const response = await axios.get(`/api/blog/${id}`);
+
+
+        if (response.data.success) {
+            setData(response.data.blog);
+        } else {
+            toast.error(response.data.message);
+        }
     } catch (error) {
-      toast.error(error.message);
+        toast.error(error.message);
     }
-  }
+};
 
 const fetchComments = async () => {
     try {
@@ -35,7 +41,6 @@ const fetchComments = async () => {
             blogId: id,
         });
 
-        console.log("Comments API:", data);
 
         if (data.success) {
             setComments(data.comments || []);
@@ -43,7 +48,6 @@ const fetchComments = async () => {
             toast.error(data.message);
         }
     } catch (error) {
-        console.log(error);
         toast.error(error.message);
     }
 };

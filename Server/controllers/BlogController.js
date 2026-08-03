@@ -11,7 +11,7 @@ export const addBlog = async (req, res)=>{
 
         // Check if all fields are present
         if(!title || !description || !category || !imageFile){
-            return res.json({success: false, message: "Message required fields"})
+            return res.json({success: false, message: "Missing required fields"})
         }
 
         const fileBuffer = fs.readFileSync(imageFile.path)
@@ -95,13 +95,27 @@ export const togglePublish = async(req, res) => {
     }
 }
 
-export const addComment = async(req, res) =>{
+export const addComment = async (req, res) => {
     try {
-        const {blog, name, Content} = req.body;
-        await Comment.create({blog, name, content});
-        res.json({success: true, message: "Comment added for review"})
+
+        const { blogId, name, content } = req.body;
+
+        await Comment.create({
+            blog: blogId,
+            name,
+            content
+        });
+
+        res.json({
+            success: true,
+            message: "Comment added for review"
+        });
+
     } catch (error) {
-        res.json({success: false, message: error.message})
+        res.json({
+            success: false,
+            message: error.message
+        });
     }
 }
 
@@ -109,7 +123,10 @@ export const getBlogComments = async(req, res) =>{
     try {
          const {blogId} = req.body;
         const comments = await Comment.find({blog: blogId, isApproved: true}).sort({createdAt: -1});
-        res.json({success: true, message: comments})
+        res.json({
+    success: true,
+    comments: comments
+});
     } catch (error) {
         res.json({success: false, message: error.message})
     }
@@ -118,7 +135,7 @@ export const getBlogComments = async(req, res) =>{
 export const generateContent = async(req, res) => {
     try {
         const {prompt} = req.body;
-        await main(prompt + "Generate a blog content for this topic in simple text format")
+        const content = await main(prompt + " Generate a blog content for this topic in simple text format")
         res.json({success: true, content});
     } catch (error) {
         res.json({success: false, message: error.message});

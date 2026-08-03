@@ -1,6 +1,7 @@
 import React from 'react';
 import { assets } from '../../Assets/assets';
 import { useAppContext } from '../../../context/AppContext';
+import toast from 'react-hot-toast';
 
 const CommentTableItem = ({ comment, fetchComments }) => {
   const { blog, createdAt, _id } = comment;
