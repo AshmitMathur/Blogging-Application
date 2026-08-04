@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useAppContext } from '../../../context/AppContext'
 import toast from 'react-hot-toast';
+import { useTheme } from '../../../context/ThemeContext';
 
 const Login = () => {
   const {axios, setToken} = useAppContext();
@@ -29,20 +30,20 @@ const Login = () => {
       <div className='w-full max-w-sm p-6 max-md:m-6 border border-primary/30 shadow-xl shadow-primary/15 rounded-lg'>
         <div className='flex flex-col items-center justify-center'>
             <div className='w-full py-6 text-center'>
-                <h1 className='text-3xl font-bold'><span className='text-primary'>Admin</span> Login</h1>
-                <p className='font-light'>Enter Credientials</p>
+                <h1 className='text-3xl font-bold dark:text-gray-200'><span className='text-primary'>Admin</span> Login</h1>
+                <p className='font-light dark:text-gray-200'>Enter Credientials</p>
             </div>
             <form onSubmit={handleSubmit} className='mt-6 w-full sm:max-w-md text-gray-600'>
                 <div className='flex flex-col'>
-                    <label htmlFor="">Email</label>
+                    <label className='dark:text-gray-200' htmlFor="">Email</label>
                     <input onChange={e=> setEmail(e.target.value)} value={email}
-                    type="email" required placeholder='Your Email Id' className='border-b-2 border-gray-300 p-2 outline-none mb-6' />
+                    type="email" required placeholder='Your Email Id' className='border-b-2 border-gray-300 p-2 outline-none mb-6 dark:text-gray-200' />
                 </div>
 
-                <div className='flex flex-col'>
-                    <label htmlFor="">Email</label>
+                <div className='flex flex-col '>
+                    <label className='dark:text-gray-200' htmlFor="">Password</label>
                     <input onChange={e=> setPassword(e.target.value)} value={password}
-                     type="password" required placeholder='Your Password' className='border-b-2 border-gray-300 p-2 outline-none mb-6' />
+                     type="password" required placeholder='Your Password' className='border-b-2 border-gray-300 p-2 outline-none mb-6 dark:text-gray-200'/>
                 </div>
                 <button type='submit' className='w-full py-3 font-medium bg-primary text-white rounded cursor-pointer hover:bg-primary/90 transition-all'> Login </button>
             </form>

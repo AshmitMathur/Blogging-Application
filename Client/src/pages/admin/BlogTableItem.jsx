@@ -8,6 +8,8 @@ const BlogTableItem = ({blog, fetchBlogs, index}) => {
     const {title, createdAt} = blog;
     const BlogDate = new Date(createdAt);
 
+    console.log(blog)
+
     const {axios} = useAppContext();
     const deleteBlog = async()=> {
       const confirm = window.confirm("Are you sure you want to delete this Blog");
@@ -43,14 +45,14 @@ const BlogTableItem = ({blog, fetchBlogs, index}) => {
     }
   return (
     <tr className='border-y border-gray-300'>
-      <th className='px-2 py-4'> {index} </th>
-      <td className='px-2 py-4'> {title}</td>
-      <td className='px-2 py-4 max-sm:hidden'> {BlogDate.toDateString()}</td>
+      <th className='px-2 py-4 dark:text-gray-200'> {index} </th>
+      <td className='px-2 py-4 dark:text-gray-200'> {title}</td>
+      <td className='px-2 py-4 max-sm:hidden dark:text-gray-200'> {BlogDate.toDateString()}</td>
       <td className='px-2 py-4 max-sm:hidden'>
         <p className={`${blog.isPublished ? "text-green-600" : "text-orange-700"}`}> {blog.isPublished ? "Published" : "UnPublished"}</p>
       </td>
       <td className='px-2 py-4 flex gap-3 text-xs'>
-        <button onClick={togglePublish} className='border px-2 py-0.5 mt-1 rounded cursor-pointer'>{blog.isPublished ? "UnPublish" : "Publish"}</button>
+        <button onClick={togglePublish} className='border px-2 py-0.5 mt-1 rounded cursor-pointer dark:text-gray-200'>{blog.isPublished ? "UnPublish" : "Publish"}</button>
         <img src={assets.cross_icon} className='w-8 hover:scale-110 transition-all cursor-pointer' alt=""  onClick={deleteBlog}/>
       </td>
     </tr>

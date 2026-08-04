@@ -9,6 +9,8 @@ const BlogList = () => {
     const [menu, setmenu] = useState("All");
     const {blogs, input} = useAppContext();
 
+    console.log("blogs:", blogs);
+
     const filteredBlogs = () => {
       if(input == ''){
         return blogs;
@@ -21,12 +23,17 @@ const BlogList = () => {
     {blogCategories.map((item)=> (
         <div key={item} className='relative'>
             <button onClick = {()=> setmenu(item)} 
-            className={`cursor-pointer text-gray-500 ${menu === item && 'text-white px-4 pt-0.5'}`}>{item}
+            className={`relative z-10 cursor-pointer px-4 py-1 rounded-full transition-colors duration-300 
+  ${
+  menu === item
+    ? "text-white"
+    : "text-gray-600 dark:text-gray-400"
+  }`}>{item}
             
                 {menu === item && (
                     <motion.div layoutId='underline'
-                    transition={{type: 'string', stiffness:500, damping:30}}
-                     className='absolute left-0 right-0 top-0 h-7 -z-1 bg-primary rounded-full'>
+                    transition={{type: 'spring', stiffness:500, damping:30}}
+                     className='absolute inset-0 -z-10 rounded-full bg-primary'>
 
                 </motion.div>
                 )}

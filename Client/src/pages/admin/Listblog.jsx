@@ -28,17 +28,17 @@ const Listblog = () => {
         fetchBlogs();
     }, [])
   return (
-    <div className='flex-1 h-4/5 mt-4 pt-5 px-5 sm:pt-12 sm:pl-16 bg-blue-50/50'>
-      <h1>All Blogs</h1>
-                  <div className='relative max-w-4xl overflow-x-auto shadow rounded-lg scrollbar-hide bg-white'>
+    <div className='flex-1 h-4/5 mt-4 pt-5 px-5 sm:pt-12 sm:pl-16 bg-blue-50/50 dark:bg-gray-950'>
+      <h1 className='m-2 dark:text-gray-200'>All Blogs</h1>
+                  <div className='relative max-w-4xl overflow-x-auto shadow rounded-lg scrollbar-hide bg-white dark:bg-gray-700'>
                 <table className='w-full text-sm text-gray-500'>
                     <thead className='text-xs text-gray-600 text-left uppercase'>
                         <tr>
-                            <th scope='col' className='px-2 py-4 xl:px-6'> # </th>
-                            <th scope='col' className='px-2 py-4'> Blog Title </th>
-                            <th scope='col' className='px-2 py-4 max-sm:hidden'> Date </th>
-                            <th scope='col' className='px-2 py-4 max-sm:hidden'> Status </th>
-                            <th scope='col' className='px-2 py-4'> Actions </th>
+                            <th scope='col' className='px-2 py-4 xl:px-6 dark:text-gray-200'> # </th>
+                            <th scope='col' className='px-2 py-4 dark:text-gray-200'> Blog Title </th>
+                            <th scope='col' className='px-2 py-4 max-sm:hidden dark:text-gray-200'> Date </th>
+                            <th scope='col' className='px-2 py-4 max-sm:hidden dark:text-gray-200'> Status </th>
+                            <th scope='col' className='px-2 py-4 dark:text-gray-200'> Actions </th>
                         </tr>
                     </thead>
                     <tbody>

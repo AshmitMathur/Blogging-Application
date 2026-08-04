@@ -2,6 +2,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 *{
   font-family: "Outfit", sans-serif;
 }
@@ -18,17 +20,17 @@
 
 .rich-text p { margin-bottom: 16px; color: #292929; }
 
-.rich-text h1 { font-size: 36px; font-weight: 700; color: #252525 !important; margin: 32px 0; }
+.rich-text h1 { font-size: 36px; font-weight: 700; color: #252525 ; margin: 32px 0; }
 
-.rich-text h2 { font-size: 22px; font-weight: 700; color: #252525 !important; margin: 24px 0; }
+.rich-text h2 { font-size: 22px; font-weight: 700; color: #252525 ; margin: 24px 0; }
 
-.rich-text h3 { font-size: 18px; font-weight: 600; color: #333333 !important; margin: 20px 0; }
+.rich-text h3 { font-size: 18px; font-weight: 600; color: #333333 ; margin: 20px 0; }
 
-.rich-text h4 { font-size: 16px; font-weight: 500; color: #444444 !important; margin: 16px 0; }
+.rich-text h4 { font-size: 16px; font-weight: 500; color: #444444 ; margin: 16px 0; }
 
-.rich-text h5 { font-size: 14px; font-weight: 400; color: #555555 !important; margin: 12px 0; }
+.rich-text h5 { font-size: 14px; font-weight: 400; color: #555555 ; margin: 12px 0; }
 
-.rich-text h6 { font-size: 12px; font-weight: 400; color: #666666 !important; margin: 8px 0; }
+.rich-text h6 { font-size: 12px; font-weight: 400; color: #666666 ; margin: 8px 0; }
 
 .rich-text strong { font-weight: 700; }
 
@@ -39,3 +41,33 @@
 .rich-text li { margin-bottom: 8px; }
 
 .rich-text a { color: #007AFF }
+
+
+.dark .rich-text h1,
+.dark .rich-text h2,
+.dark .rich-text h3,
+.dark .rich-text h4,
+.dark .rich-text h5,
+.dark .rich-text h6 {
+    color: rgb(209 213 219);
+}
+
+.dark .rich-text p,
+.dark .rich-text li,
+.dark .rich-text strong,
+.dark .rich-text em,
+.dark .rich-text blockquote {
+    color: rgb(209 213 219);
+}
+
+.dark .rich-text a {
+    color: rgb(96 165 250);
+}
+
+.dark .rich-text code {
+    color: rgb(248 250 252);
+}
+
+.dark .rich-text pre {
+    background: rgb(31 41 55);
+}

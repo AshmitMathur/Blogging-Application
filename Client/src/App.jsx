@@ -16,7 +16,7 @@ const App = () => {
 
   const {token} = useAppContext();
   return (
-    <div>
+    <div className='dark:bg-black'> 
       <Toaster/>
       <Routes>
         <Route path="/" element={<Home/>} />
