@@ -187,7 +187,7 @@ const Addblog = () => {
                 <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="mt-2 px-3 py-2 border text-gray-500 border-gray-300 outline-none rounded dark:text-gray-300"
+                    className="mt-2 px-3 py-2 border text-gray-500 border-gray-300 outline-none rounded dark:text-gray-300 dark:bg-gray-700"
                 >
                     {blogCategories.map((item, index) => (
                         <option key={index} value={item}>
