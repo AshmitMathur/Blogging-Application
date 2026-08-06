@@ -141,3 +141,70 @@ export const generateContent = async(req, res) => {
         res.json({success: false, message: error.message});
     }
 }
+
+export const updateBlog = async (req, res) => {
+    try {
+        const { blogId } = req.params;
+
+        const { title, subTitle, description, category, isPublished } =
+            JSON.parse(req.body.blog);
+
+        const imageFile = req.file;
+
+        const blog = await Blog.findById(blogId);
+
+        if (!blog) {
+            return res.json({
+                success: false,
+                message: "Blog not found"
+            });
+        }
+
+        if (!title || !description || !category) {
+    return res.json({
+        success: false,
+        message: "Missing required fields",
+    });
+}
+
+        blog.title = title;
+        blog.subTitle = subTitle;
+        blog.description = description;
+        blog.category = category;
+        blog.isPublished = isPublished;
+
+        if (imageFile) {
+    const fileBuffer = fs.readFileSync(imageFile.path);
+
+    const response = await imagekit.upload({
+        file: fileBuffer,
+        fileName: imageFile.originalname,
+        folder: "/blogs",
+    });
+
+    const optimizedImageUrl = imagekit.url({
+        path: response.filePath,
+        transformation: [
+            { quality: "auto" },
+            { format: "webp" },
+            { width: "1280" },
+        ],
+    });
+
+    blog.image = optimizedImageUrl;
+}
+
+await blog.save();
+
+res.json({
+    success: true,
+    message: "Blog Updated Successfully",
+});
+
+    } catch (error) {
+        res.json({
+            success: false,
+            message: error.message
+        });
+    }
+};

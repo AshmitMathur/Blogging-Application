@@ -1,40 +1,52 @@
-import React, { useEffect, useRef } from 'react'
-import { useState } from 'react';
-import { assets, blogCategories } from '../../Assets/assets'
-import Quill from 'quill';
-import { useAppContext } from '../../../context/AppContext';
-import toast from 'react-hot-toast';
-import {parse} from 'marked';
+import React, { useEffect, useRef, useState } from "react";
+import { assets, blogCategories } from "../../Assets/assets";
+import Quill from "quill";
+import { useAppContext } from "../../../context/AppContext";
+import toast from "react-hot-toast";
+import { parse } from "marked";
 
-const Addblog = () => {
-
-    const { axios } = useAppContext();
+const BlogForm = ({ mode = "add", initialData = null, blogId }) => {
+    const { axios, navigate } = useAppContext();
 
     const [isAdding, setIsAdding] = useState(false);
-    const [Loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const editorRef = useRef(null);
     const quillRef = useRef(null);
     const imageInputRef = useRef(null);
 
     const [image, setImage] = useState(null);
-    const [title, setTitle] = useState('');
-    const [subTitle, setSubTitle] = useState('');
-    const [category, setCategory] = useState('Startup');
+    const [existingImage, setExistingImage] = useState("");
+
+    const [title, setTitle] = useState("");
+    const [subTitle, setSubTitle] = useState("");
+    const [category, setCategory] = useState("Startup");
     const [isPublished, setIsPublished] = useState(false);
 
     useEffect(() => {
         if (!quillRef.current && editorRef.current) {
             quillRef.current = new Quill(editorRef.current, {
-                theme: 'snow',
+                theme: "snow",
             });
         }
     }, []);
 
+    useEffect(() => {
+        if (!initialData || !quillRef.current) return;
+
+        setTitle(initialData.title);
+        setSubTitle(initialData.subTitle);
+        setCategory(initialData.category);
+        setIsPublished(initialData.isPublished);
+        setExistingImage(initialData.image);
+
+        quillRef.current.root.innerHTML = initialData.description;
+    }, [initialData]);
+
     const onSubmitHandler = async (e) => {
         e.preventDefault();
 
-        if (!image) {
+        if (mode === "add" && !image) {
             toast.error("Please select an image.");
             return;
         }
@@ -52,30 +64,50 @@ const Addblog = () => {
 
             const formData = new FormData();
             formData.append("blog", JSON.stringify(blog));
-            formData.append("image", image);
 
-            const { data } = await axios.post("/api/blog/add", formData);
+            if (image) {
+                formData.append("image", image);
+            }
+
+            let data;
+
+            if (mode === "add") {
+                const response = await axios.post("/api/blog/add", formData);
+                data = response.data;
+            } else {
+                const response = await axios.put(
+                    `/api/blog/update/${blogId}`,
+                    formData
+                );
+                data = response.data;
+            }
 
             if (data.success) {
                 toast.success(data.message);
 
+                if (mode === "edit") {
+                    navigate("/admin/listblog");
+                    return;
+                }
+
+                // Reset form after adding
                 setImage(null);
-                setTitle('');
-                setSubTitle('');
-                setCategory('Startup');
+                setExistingImage("");
+                setTitle("");
+                setSubTitle("");
+                setCategory("Startup");
                 setIsPublished(false);
 
                 if (quillRef.current) {
-                    quillRef.current.root.innerHTML = '';
+                    quillRef.current.root.innerHTML = "";
                 }
 
                 if (imageInputRef.current) {
-                    imageInputRef.current.value = '';
+                    imageInputRef.current.value = "";
                 }
             } else {
                 toast.error(data.message);
             }
-
         } catch (error) {
             console.error(error);
 
@@ -90,20 +122,23 @@ const Addblog = () => {
     };
 
     const generateContent = async () => {
-        if(!title) return toast.error("Please enter A Title");
+        if (!title) return toast.error("Please enter a Title");
+
         try {
             setLoading(true);
-            const {data} = await axios.post("/api/blog/generate", {prompt: title})
-            if(data.success){
+
+            const { data } = await axios.post("/api/blog/generate", {
+                prompt: title,
+            });
+
+            if (data.success) {
                 quillRef.current.root.innerHTML = parse(data.content);
-            }
-            else{
+            } else {
                 toast.error(data.message);
             }
         } catch (error) {
-            toast.error(error.message)
-        }
-        finally{
+            toast.error(error.message);
+        } finally {
             setLoading(false);
         }
     };
@@ -114,15 +149,14 @@ const Addblog = () => {
             className="flex-1 bg-blue-50/50 text-gray-600 h-full overflow-scroll dark:bg-black"
         >
             <div className="bg-white w-full max-w-3xl p-4 md:p-10 sm:m-10 shadow rounded dark:bg-gray-900">
-
-                <p className='dark:text-gray-300'>Upload Thumbnail</p>
+                <p className="dark:text-gray-300">Upload Thumbnail</p>
 
                 <label htmlFor="image">
                     <img
                         src={
                             image
                                 ? URL.createObjectURL(image)
-                                : assets.upload_area
+                                : existingImage || assets.upload_area
                         }
                         alt=""
                         className="mt-2 h-16 rounded cursor-pointer"
@@ -133,7 +167,7 @@ const Addblog = () => {
                         id="image"
                         type="file"
                         hidden
-                        required
+                        required={mode === "add"}
                         onChange={(e) => setImage(e.target.files[0])}
                     />
                 </label>
@@ -142,10 +176,10 @@ const Addblog = () => {
 
                 <input
                     type="text"
-                    placeholder="Type here"
                     required
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Type here"
                     className="w-full max-w-lg mt-2 p-2 border border-gray-300 outline-none rounded dark:text-gray-300"
                 />
 
@@ -153,10 +187,10 @@ const Addblog = () => {
 
                 <input
                     type="text"
-                    placeholder="Type here"
                     required
                     value={subTitle}
                     onChange={(e) => setSubTitle(e.target.value)}
+                    placeholder="Type here"
                     className="w-full max-w-lg mt-2 p-2 border border-gray-300 outline-none rounded dark:text-gray-300"
                 />
 
@@ -165,18 +199,17 @@ const Addblog = () => {
                 <div className="max-w-lg h-74 pb-16 sm:pb-10 pt-2 relative">
                     <div ref={editorRef}></div>
 
-                    {Loading && (
-                        <div className='absolute inset-0 z-50 bg-gray-200/50 flex items-center justify-center'>
-                            <div className='w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin'>
-
-                            </div>
+                    {loading && (
+                        <div className="absolute inset-0 z-50 bg-gray-200/50 flex items-center justify-center">
+                            <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
                         </div>
                     )}
 
-                    <button disabled={Loading}
+                    <button
                         type="button"
+                        disabled={loading}
                         onClick={generateContent}
-                        className="absolute bottom-1 right-2 ml-2 text-xs text-white bg-black/70 px-4 py-1.5 rounded hover:underline cursor-pointer"
+                        className="absolute bottom-1 right-2 text-xs text-white bg-black/70 px-4 py-1.5 rounded cursor-pointer"
                     >
                         Generate With AI
                     </button>
@@ -187,7 +220,7 @@ const Addblog = () => {
                 <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="mt-2 px-3 py-2 border text-gray-500 border-gray-300 outline-none rounded dark:text-gray-300 dark:bg-gray-700"
+                    className="mt-2 px-3 py-2 border border-gray-300 rounded text-gray-500 dark:bg-gray-700 dark:text-gray-300"
                 >
                     {blogCategories.map((item, index) => (
                         <option key={index} value={item}>
@@ -197,7 +230,7 @@ const Addblog = () => {
                 </select>
 
                 <div className="flex gap-2 mt-4">
-                    <p className='dark:text-gray-300'>Publish Now</p>
+                    <p className="dark:text-gray-300">Publish Now</p>
 
                     <input
                         type="checkbox"
@@ -210,14 +243,19 @@ const Addblog = () => {
                 <button
                     type="submit"
                     disabled={isAdding}
-                    className="mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer text-sm disabled:opacity-50"
+                    className="mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer disabled:opacity-50"
                 >
-                    {isAdding ? "Adding..." : "Add Blog"}
+                    {isAdding
+                        ? mode === "add"
+                            ? "Adding..."
+                            : "Updating..."
+                        : mode === "add"
+                        ? "Add Blog"
+                        : "Update Blog"}
                 </button>
-
             </div>
         </form>
     );
 };
 
-export default Addblog;
+export default BlogForm;
