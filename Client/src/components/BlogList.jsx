@@ -9,8 +9,6 @@ const BlogList = () => {
     const [menu, setmenu] = useState("All");
     const {blogs, input} = useAppContext();
 
-    console.log("blogs:", blogs);
-
     const filteredBlogs = () => {
       if(input == ''){
         return blogs;

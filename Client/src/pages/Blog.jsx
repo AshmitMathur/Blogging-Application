@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { assets, blog_data, comments_data } from '../Assets/assets';
+import { assets } from '../Assets/assets';
 import Navbar from '../components/Navbar';
 import Moment from 'moment';
 import Footer from '../components/Footer';
 import Loader from '../components/Loader';
 import { useAppContext } from '../../context/AppContext';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 
 const Blog = () => {
   const {id} = useParams();
@@ -61,6 +62,8 @@ const fetchComments = async () => {
         toast.success(data.message);
         setName('');
         setContent('');
+
+        await fetchComments();
       }
       else{
         toast.error(data.message);
@@ -70,10 +73,14 @@ const fetchComments = async () => {
     }
   }
 
-  useEffect(()=> {
-    fetchBlogData()
-    fetchComments()
-  }, [])
+useEffect(() => {
+    const fetchData = async () => {
+        await fetchBlogData();
+        await fetchComments();
+    };
+
+    fetchData();
+}, [id]);
 
   return data ? (
     <div className='relative'>
@@ -83,11 +90,35 @@ const fetchComments = async () => {
           <p className='dark:text-gray-300'>Published on {Moment(data.createdAt).format('Do MMMM YYYY')}</p>
           <h1 className='text-2xl sm:text-5xl font-semibold max-w-2xl mx-auto text-gray-800 dark:text-gray-300'>{data.title}</h1>
           <h2 className='my-5 max-w-lg truncate mx-auto dark:text-gray-300'>{data.subTitle}</h2>
-          <p className='inline-block py-1 px-4 rounded-full mb-6 border text-sm border-primary/35 bg-primary/5 font-medium text-primary'>Ashmit Mathur</p>
+              <div className="inline-flex items-center gap-3 mt-6 hover:opacity-80 transition cursor-pointer">
+<Link
+    to={`/profile/${data.author?.username}`}
+    className="flex items-center justify-center gap-3 mt-6 hover:opacity-80 transition"
+>
+    <img
+        src={data.author?.avatar || assets.user_icon}
+        alt={data.author?.name}
+        className="w-12 h-12 rounded-full object-cover"
+    />
+
+    <div className="text-left">
+        <p className="font-semibold dark:text-gray-300">
+            {data.author?.name}
+        </p>
+
+        <p className="text-sm text-gray-500">
+            @{data.author?.username}
+        </p>
+    </div>
+</Link>
+
+    </div>
         </div>
+        {/* inline-block py-1 px-4 rounded-full mb-6 border text-sm border-primary/35 bg-primary/5 font-medium text-primary */}
 
         <div className='mx-5 max-w-5xl md:mx-auto my-10 mt-6 dark:text-gray-300'>
-          <img src={data.image} alt="" className='rounded-3xl mb-5' />
+          <img
+    src={data.image || assets.blog_icon} alt={data.title}  className='rounded-3xl mb-5' />
           <div className='rich-text max-w-3xl mx-auto ' dangerouslySetInnerHTML={{__html: data.description}}></div>
 
             <div className='mt-14 mb-10 max-w-3xl mx-auto'>

@@ -9,7 +9,6 @@ export const addBlog = async (req, res)=>{
         const {title, subTitle, description, category, isPublished} = JSON.parse(req.body.blog);
         const imageFile = req.file;
 
-        // Check if all fields are present
         if(!title || !description || !category || !imageFile){
             return res.json({success: false, message: "Missing required fields"})
         }
@@ -22,20 +21,19 @@ export const addBlog = async (req, res)=>{
             folder: "/blogs"
         });
 
-        // Optimization through imagekit URL transformation
-
         const optimizedImageUrl = imagekit.url({
             path: response.filePath,
             transformation: [
-                {quality: 'auto'}, // Auto Compression
-                {format: 'webp'}, // Convert to Modern Format
-                {width: '1280'} // Width Resizing
+                {quality: 'auto'}, 
+                {format: 'webp'}, 
+                {width: '1280'} 
             ]
         });
 
         const image = optimizedImageUrl;
 
-        await Blog.create({title, subTitle, description, category, image, isPublished})
+        await Blog.create({title, subTitle, description, category, image,
+            author: req.userId, isPublished})
 
         res.json({success: true, message: "Blog Added Successfully"})
 
@@ -47,10 +45,11 @@ export const addBlog = async (req, res)=>{
 
 export const getAllBlogs = async(req, res)=> {
     try {
-        const blogs = await Blog.find({isPublished: true})
+        const blogs = await Blog.find({ isPublished: true })
+        .populate("author", "name username avatar");
         res.json({success: true, blogs})
     } catch (error) {
-        res.json({uccess: false, message: error.message})
+        res.json({success: false, message: error.message})
     }
 }
 
@@ -58,6 +57,7 @@ export const getBlogById = async(req, res) =>{
     try {
         const {blogId} = req.params;
         const blog = await Blog.findById(blogId)
+        .populate("author", "name username avatar");
 
         if(!blog){
             return res.json({success: false, message: "Blog Not Found"})
@@ -72,7 +72,23 @@ export const getBlogById = async(req, res) =>{
 export const deleteBlogById = async(req, res) =>{
     try {
         const {id} = req.body;
-        await Blog.findByIdAndDelete(id)
+    const blog = await Blog.findById(id);
+
+if (!blog) {
+    return res.json({
+        success: false,
+        message: "Blog not found",
+    });
+}
+
+if (blog.author.toString() !== req.userId) {
+    return res.json({
+        success: false,
+        message: "You are not authorized to delete this blog",
+    });
+}
+
+await Blog.findByIdAndDelete(id);
 
         // Delete comments 
         await Comment.deleteMany({blog: id});
@@ -87,6 +103,21 @@ export const togglePublish = async(req, res) => {
     try {
         const{id} = req.body;
         const blog = await Blog.findById(id);
+
+        if (!blog) {
+    return res.json({
+        success: false,
+        message: "Blog not found",
+    });
+}
+
+if (blog.author.toString() !== req.userId) {
+    return res.json({
+        success: false,
+        message: "You are not authorized",
+    });
+}
+
         blog.isPublished = !blog.isPublished;
         await blog.save();
         res.json({success: true, message: "Blog Status Updated"});
@@ -160,6 +191,14 @@ export const updateBlog = async (req, res) => {
             });
         }
 
+        if (blog.author.toString() !== req.userId) {
+    return res.json({
+        success: false,
+        message: "You are not authorized to edit this blog",
+    });
+}
+
+
         if (!title || !description || !category) {
     return res.json({
         success: false,
@@ -208,3 +247,21 @@ res.json({
         });
     }
 };
+
+export const getMyBlogs = async(req, res) => {
+    try {
+            const blogs = await Blog.find({
+            author: req.userId,
+        }).populate("author", "name username avatar");
+
+        res.json({
+            success: true,
+            blogs,
+        })
+    } catch (error) {
+        res.json({
+            success: false,
+            message: error.message
+        })
+    }
+}

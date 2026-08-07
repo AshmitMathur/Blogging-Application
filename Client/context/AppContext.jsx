@@ -15,10 +15,8 @@ export const AppProvider = ({children}) => {
     const [token, setToken] = useState(null);
     const [blogs, setBlogs] = useState([]);
     const [input, setInput] = useState("");
-
-    const value = {
-        axios, navigate, token, setToken, blogs, setBlogs, input, setBlogs, setInput
-    }
+    const [user, setUser] = useState(null);
+    const [myBlogs, setmyBlogs] = useState([]);
 
     const fetchBlogs = async()=> {
         try {
@@ -29,6 +27,41 @@ export const AppProvider = ({children}) => {
         }
     }
 
+    const fetchCurrentUser = async()=> {
+        try {
+            const {data} = await axios.get("/api/auth/me");
+
+            if(data.success){
+                setUser(data.user);
+            }
+            else{
+                setUser(null);
+            }
+        } catch (error) {
+            setUser(null);
+        }
+    }
+
+    const fetchMyBlogs = async() => {
+        try {
+            const { data} = await axios.get("/api/blog/my-blogs");
+            if(data.success){
+                setmyBlogs(data.blogs);
+            }
+            else{
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
+
+    const value = {
+        axios, navigate, token, setToken, blogs, setBlogs, input, setInput, 
+        user, setUser, fetchCurrentUser, myBlogs, setmyBlogs, fetchMyBlogs
+    };
+
+
 
 
     useEffect(()=> {
@@ -37,6 +70,9 @@ export const AppProvider = ({children}) => {
         if(token){
             setToken(token);
             axios.defaults.headers.common['Authorization'] = `${token}`;
+
+            fetchCurrentUser();
+            fetchMyBlogs();
         }
     }, [])
 
