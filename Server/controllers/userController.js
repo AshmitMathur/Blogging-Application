@@ -11,7 +11,7 @@ export const updateProfile = async (req, res) => {
             {
                 name, bio, avatar
             },
-            {  new: true }
+            { returnDocument:"after" }
         );
 
         res.json({
