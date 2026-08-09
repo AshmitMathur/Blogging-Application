@@ -40,10 +40,12 @@ export const getUserProfile = async (req, res) => {
             });
         }
 
-        const blogs = await Blog.find({
-            author: user._id,
-            isPublished: true,
-        }).sort({ createdAt: -1 });
+const blogs = await Blog.find({
+    author: user._id,
+    isPublished: true,
+})
+.populate("author", "name username avatar")
+.sort({ createdAt: -1 });
 
         res.json({
             success: true,

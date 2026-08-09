@@ -18,6 +18,11 @@ export const AppProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [myBlogs, setmyBlogs] = useState([]);
 
+    const removeBlog = (blogId) => {
+        setBlogs((prev) => prev.filter((blog) => blog._id !== blogId));
+        setmyBlogs((prev) => prev.filter((blog) => blog._id !== blogId));
+    }
+
     const fetchBlogs = async()=> {
         try {
            const {data} =  await axios.get("/api/blog/all");
@@ -58,7 +63,8 @@ export const AppProvider = ({children}) => {
 
     const value = {
         axios, navigate, token, setToken, blogs, setBlogs, input, setInput, 
-        user, setUser, fetchCurrentUser, myBlogs, setmyBlogs, fetchMyBlogs
+        user, setUser, fetchCurrentUser, myBlogs, setmyBlogs, fetchMyBlogs, 
+        removeBlog
     };
 
 

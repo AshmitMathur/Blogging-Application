@@ -16,6 +16,7 @@ import Register from './pages/users/pages/Register'
 import UserLogin from './pages/users/pages/userLogin'
 import Profile from "./pages/users/pages/Profile";
 import EditProfile from "./pages/users/pages/EditProfile";
+import WriteBlog from "./pages/users/pages/WriteBlog";
 
 const App = () => {
 
@@ -27,6 +28,8 @@ const App = () => {
         <Route path="/" element={<Home/>} />
         <Route path='register' element={<Register/>}/>
         <Route path='/login' element={<UserLogin/>}/>
+        <Route path="/write" element={<WriteBlog />} />
+        <Route path="/edit-blog/:id" element={<EditBlog />} />
         <Route path="/profile/:username" element={<Profile />} />
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/blog/:id" element={<Blog/>} />
