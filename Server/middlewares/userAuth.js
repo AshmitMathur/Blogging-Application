@@ -11,10 +11,19 @@ const userAuth = async(req, res, next) => {
         })
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.id;
+const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    next();
+if (decoded.role !== "user") {
+    return res.json({
+        success: false,
+        message: "Unauthorized"
+    });
+}
+
+req.userId = decoded.id;
+
+next();
+
     }catch(error){
         console.log("JWT Error:", error);
         return res.json({

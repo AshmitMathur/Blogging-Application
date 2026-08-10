@@ -2,11 +2,13 @@ import React, { useState } from 'react'
 import { useAppContext } from '../../../context/AppContext'
 import toast from 'react-hot-toast';
 import { useTheme } from '../../../context/ThemeContext';
+import { assets } from '../../Assets/assets';
 
 const Login = () => {
-  const {axios, setToken} = useAppContext();
+  const {axios, setToken, setIsAdmin} = useAppContext();
     const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [password, setPassword] = useState('');
+    const {theme, toggleTheme} = useTheme();
 
 
     const handleSubmit = async (e) => {
@@ -15,6 +17,7 @@ const Login = () => {
           const {data} = await axios.post('/api/admin/Login', {email, password});
           if(data.success){
             setToken(data.token);
+            setIsAdmin(true);
             localStorage.setItem('token', data.token);
             axios.defaults.headers.common['Authorization'] = data.token;
           }
@@ -27,6 +30,20 @@ const Login = () => {
     }
   return (
     <div className='flex items-center justify-center h-screen'>
+            <img
+    onClick={() => navigate('/')}
+    src={assets.logo}
+    alt="logo"
+    className="absolute top-5 left-5 cursor-pointer text-xl w-32 sm:w-44 cursor-pointer dark:invert"
+/>
+
+      <button
+    onClick={toggleTheme}
+    className="absolute top-5 right-5 cursor-pointer text-xl"
+>
+    {theme === "light" ? "🌙" : "☀️"}
+</button>
+
       <div className='w-full max-w-sm p-6 max-md:m-6 border border-primary/30 shadow-xl shadow-primary/15 rounded-lg'>
         <div className='flex flex-col items-center justify-center'>
             <div className='w-full py-6 text-center'>

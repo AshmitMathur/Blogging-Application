@@ -20,7 +20,7 @@ import WriteBlog from "./pages/users/pages/WriteBlog";
 
 const App = () => {
 
-  const {token} = useAppContext();
+  const { isAdmin} = useAppContext();
   return (
     <div className='dark:bg-black'> 
       <Toaster/>
@@ -33,13 +33,19 @@ const App = () => {
         <Route path="/profile/:username" element={<Profile />} />
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/blog/:id" element={<Blog/>} />
-        <Route path='/admin' element={token ? <Layout/> : <Login/>}>
-           <Route index element={<Dashboard/>}/>
-           <Route path='addblog' element={<Addblog/>}/>
-           <Route path='listblog' element={<Listblog/>}/>
-           <Route path='comments' element={<Comments/>}/>
-           <Route path='editblog/:id' element={<EditBlog/>}/>
+        <Route path="/admin">
+    {isAdmin ? (
+        <Route element={<Layout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="addblog" element={<Addblog />} />
+            <Route path="listblog" element={<Listblog />} />
+            <Route path="comments" element={<Comments />} />
+            <Route path="editblog/:id" element={<EditBlog />} />
         </Route>
+    ) : (
+        <Route index element={<Login />} />
+    )}
+</Route>
       </Routes>
     </div>
   )

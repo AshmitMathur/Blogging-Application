@@ -5,7 +5,7 @@ import { useAppContext } from "../../../context/AppContext";
 import toast from "react-hot-toast";
 import { parse } from "marked";
 
-const BlogForm = ({ mode = "add", initialData = null, blogId }) => {
+const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
     const { axios, navigate } = useAppContext();
 
     const [isAdding, setIsAdding] = useState(false);
@@ -86,11 +86,9 @@ const BlogForm = ({ mode = "add", initialData = null, blogId }) => {
                 toast.success(data.message);
 
                 if (mode === "edit") {
-                    navigate("/admin/listblog");
+                    navigate(redirectTo);
                     return;
                 }
-
-                // Reset form after adding
                 setImage(null);
                 setExistingImage("");
                 setTitle("");

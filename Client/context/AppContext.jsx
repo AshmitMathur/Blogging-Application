@@ -17,11 +17,24 @@ export const AppProvider = ({children}) => {
     const [input, setInput] = useState("");
     const [user, setUser] = useState(null);
     const [myBlogs, setmyBlogs] = useState([]);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     const removeBlog = (blogId) => {
         setBlogs((prev) => prev.filter((blog) => blog._id !== blogId));
         setmyBlogs((prev) => prev.filter((blog) => blog._id !== blogId));
     }
+    const logout = () => {
+    localStorage.removeItem("token");
+
+    delete axios.defaults.headers.common["Authorization"];
+
+    setToken(null);
+    setUser(null);
+    setIsAdmin(false);
+    setmyBlogs([]);
+
+    navigate("/");
+};
 
     const fetchBlogs = async()=> {
         try {
@@ -64,23 +77,41 @@ export const AppProvider = ({children}) => {
     const value = {
         axios, navigate, token, setToken, blogs, setBlogs, input, setInput, 
         user, setUser, fetchCurrentUser, myBlogs, setmyBlogs, fetchMyBlogs, 
-        removeBlog
+        removeBlog, isAdmin, setIsAdmin, logout, fetchBlogs
     };
 
+useEffect(() => {
+    fetchBlogs();
 
+    const token = localStorage.getItem("token");
 
+    if (token) {
+        try {
+            const payload = JSON.parse(atob(token.split(".")[1]));
 
-    useEffect(()=> {
-        fetchBlogs();
-        const token = localStorage.getItem('token')
-        if(token){
             setToken(token);
-            axios.defaults.headers.common['Authorization'] = `${token}`;
 
-            fetchCurrentUser();
-            fetchMyBlogs();
+            axios.defaults.headers.common["Authorization"] = token;
+
+            if (payload.role === "admin") {
+                setIsAdmin(true);
+            } else if (payload.role === "user") {
+                setIsAdmin(false);
+                fetchCurrentUser();
+                fetchMyBlogs();
+            }
+
+        } catch (error) {
+            console.log("Invalid token:", error);
+            localStorage.removeItem("token");
+            delete axios.defaults.headers.common['Authorization'];
+
+            setToken(null);
+            setIsAdmin(null);
+            setUser(null);
         }
-    }, [])
+    }
+}, []);
 
     return(
         <AppContext.Provider value={value}>

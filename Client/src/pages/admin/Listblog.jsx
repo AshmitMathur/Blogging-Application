@@ -1,32 +1,33 @@
-import React, { useEffect } from 'react'
-import { blog_data } from '../../Assets/assets';
+import React, { useEffect, useState } from 'react'
 import BlogTableItem from './BlogTableItem';
 import { useAppContext } from '../../../context/AppContext';
 import toast from 'react-hot-toast';
 
 const Listblog = () => {
 
-    const { myBlogs, fetchMyBlogs } = useAppContext();
-    // const {axios} = useAppContext();
+const { axios } = useAppContext();
+const [blogs, setBlogs] = useState([]);
 
-    // const fetchBlogs = async ()=> {
-    //     try{
-    //         const{data} = await axios.get('/api/admin/blogs');
-    //         if(data.success){
-    //             setBlogs(data.blogs)
-    //         }
-    //         else{
-    //             toast.error(data.message);
-    //         }
-    //     }
-    //     catch(error){
-    //         toast.error(error.message);
-    //     }
-    // }
+const fetchBlogs = async () => {
+    try {
+        const { data } = await axios.get("/api/admin/blogs");
 
-    useEffect(()=> {
-        fetchMyBlogs();
-    }, [])
+        if (data.success) {
+            setBlogs(data.blogs);
+        } else {
+            toast.error(data.message);
+        }
+    } catch (error) {
+        toast.error(
+            error.response?.data?.message || error.message
+        );
+    }
+};
+
+useEffect(() => {
+    fetchBlogs();
+}, []);
+
   return (
     <div className='flex-1 h-4/5 mt-4 pt-5 px-5 sm:pt-12 sm:pl-16 bg-blue-50/50 dark:bg-gray-950'>
       <h1 className='m-2 dark:text-gray-200'>All Blogs</h1>
@@ -42,8 +43,8 @@ const Listblog = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {myBlogs.map((blog, index)=> {
-                            return <BlogTableItem key={blog._id} blog={blog} fetchBlogs={fetchMyBlogs} index={index + 1}/>
+                        {blogs.map((blog, index)=> {
+                            return <BlogTableItem key={blog._id} blog={blog} fetchBlogs={fetchBlogs} index={index + 1}/>
                         })}
                     </tbody>
                 </table>

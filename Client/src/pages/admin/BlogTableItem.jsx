@@ -13,7 +13,7 @@ const BlogTableItem = ({blog, fetchBlogs, index}) => {
 
     const navigate = useNavigate();
 
-    const {axios} = useAppContext();
+    const { axios, fetchBlogs: fetchHomeBlogs } = useAppContext();
     const deleteBlog = async()=> {
       const confirm = window.confirm("Are you sure you want to delete this Blog");
       if(!confirm) return;
@@ -23,6 +23,7 @@ const BlogTableItem = ({blog, fetchBlogs, index}) => {
         if(data.success){
           toast.success(data.message);
           await fetchBlogs();
+          await fetchHomeBlogs();
         }  
         else{
           toast.error(data.message);
@@ -32,20 +33,27 @@ const BlogTableItem = ({blog, fetchBlogs, index}) => {
       }
     }
 
-    const togglePublish = async()=> { 
-      try {
-        const {data} = await axios.post("/api/blog/toggle-publish", {id: blog._id})
-        if(data.success){
-          toast.success(data.message);
-          await fetchBlogs();
-        }  
-        else{
-          toast.error(data.message);
+const togglePublish = async () => {
+    try {
+        const { data } = await axios.post(
+            "/api/blog/toggle-publish",
+            { id: blog._id }
+        );
+
+        if (data.success) {
+            toast.success(data.message);
+
+            await fetchBlogs();
+            await fetchHomeBlogs();
+        } else {
+            toast.error(data.message);
         }
-      } catch (error) {
-        toast.error(error.message);
-      }
+    } catch (error) {
+        toast.error(
+            error.response?.data?.message || error.message
+        );
     }
+};
   return (
     <tr className='border-y border-gray-300'>
       <th className='px-2 py-4 dark:text-gray-200'> {index} </th>

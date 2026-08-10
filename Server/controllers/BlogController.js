@@ -111,12 +111,12 @@ export const togglePublish = async(req, res) => {
     });
 }
 
-if (blog.author && blog.author.toString() !== req.userId) {
-    return res.json({
-        success: false,
-        message: "You are not authorized",
-    });
-}
+// if (blog.author && blog.author.toString() !== req.userId) {
+//     return res.json({
+//         success: false,
+//         message: "You are not authorized",
+//     });
+// }
 
         blog.isPublished = !blog.isPublished;
         await blog.save();
