@@ -90,10 +90,10 @@ useEffect(() => {
           <p className='dark:text-gray-300'>Published on {Moment(data.createdAt).format('Do MMMM YYYY')}</p>
           <h1 className='text-2xl sm:text-5xl font-semibold max-w-2xl mx-auto text-gray-800 dark:text-gray-300'>{data.title}</h1>
           <h2 className='my-5 max-w-lg truncate mx-auto dark:text-gray-300'>{data.subTitle}</h2>
-              <div className="inline-flex items-center gap-3 mt-6 hover:opacity-80 transition cursor-pointer">
+              {data.author ? (<div className="inline-flex items-center gap-3 mt-6 hover:opacity-80 transition cursor-pointer">
 <Link
     to={`/profile/${data.author?.username}`}
-    className="flex items-center justify-center gap-3 mt-6 hover:opacity-80 transition"
+    className="flex items-center justify-center gap-3  hover:opacity-80 transition"
 >
     <img
         src={data.author?.avatar || assets.user_icon}
@@ -112,7 +112,10 @@ useEffect(() => {
     </div>
 </Link>
 
-    </div>
+    </div>) : (
+    <p className="mt-6 text-sm text-gray-500 dark:text-gray-400">
+        Published by Admin
+    </p> )}
         </div>
         {/* inline-block py-1 px-4 rounded-full mb-6 border text-sm border-primary/35 bg-primary/5 font-medium text-primary */}
 

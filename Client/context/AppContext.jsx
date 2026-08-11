@@ -18,21 +18,21 @@ export const AppProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [myBlogs, setmyBlogs] = useState([]);
     const [isAdmin, setIsAdmin] = useState(false);
-
+    
     const removeBlog = (blogId) => {
         setBlogs((prev) => prev.filter((blog) => blog._id !== blogId));
         setmyBlogs((prev) => prev.filter((blog) => blog._id !== blogId));
     }
-    const logout = () => {
-    localStorage.removeItem("token");
 
+const logout = () => {
+
+    localStorage.removeItem("token");
     delete axios.defaults.headers.common["Authorization"];
 
     setToken(null);
     setUser(null);
     setIsAdmin(false);
     setmyBlogs([]);
-
     navigate("/");
 };
 
@@ -83,33 +83,51 @@ export const AppProvider = ({children}) => {
 useEffect(() => {
     fetchBlogs();
 
-    const token = localStorage.getItem("token");
+    const storedToken = localStorage.getItem("token");
 
-    if (token) {
-        try {
-            const payload = JSON.parse(atob(token.split(".")[1]));
+    if (!storedToken) {
+        setToken(null);
+        setUser(null);
+        setIsAdmin(false);
+        delete axios.defaults.headers.common["Authorization"];
+        return;
+    }
 
-            setToken(token);
+    try {
+        const payload = JSON.parse(
+            atob(storedToken.split(".")[1])
+        );
 
-            axios.defaults.headers.common["Authorization"] = token;
+        setToken(storedToken);
 
-            if (payload.role === "admin") {
-                setIsAdmin(true);
-            } else if (payload.role === "user") {
-                setIsAdmin(false);
-                fetchCurrentUser();
-                fetchMyBlogs();
-            }
+        axios.defaults.headers.common["Authorization"] =
+            storedToken;
 
-        } catch (error) {
-            console.log("Invalid token:", error);
-            localStorage.removeItem("token");
-            delete axios.defaults.headers.common['Authorization'];
-
-            setToken(null);
-            setIsAdmin(null);
+        if (payload.role === "admin") {
+            setIsAdmin(true);
+            setUser(null);
+        } 
+        else if (payload.role === "user") {
+            setIsAdmin(false);
+            fetchCurrentUser();
+            fetchMyBlogs();
+        }
+        else {
+            // Unknown role
+            setIsAdmin(false);
             setUser(null);
         }
+
+    } catch (error) {
+        console.log("Invalid token:", error);
+
+        localStorage.removeItem("token");
+        delete axios.defaults.headers.common["Authorization"];
+
+        setToken(null);
+        setUser(null);
+        setIsAdmin(false);
+        setmyBlogs([]);
     }
 }, []);
 

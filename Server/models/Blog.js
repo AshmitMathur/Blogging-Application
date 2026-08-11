@@ -9,7 +9,7 @@ const blogSchema = new mongoose.Schema({
     author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
+    required: false,
     },
     isPublished: {type: Boolean, required: true},
 },{timestamps: true});

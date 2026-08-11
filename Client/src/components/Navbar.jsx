@@ -4,8 +4,7 @@ import { useAppContext } from '../../context/AppContext'
 import { useTheme } from '../../context/ThemeContext'
 
 const Navbar = () => {
-
-  const { navigate, user, isAdmin, logout } = useAppContext();
+  const { navigate, user, isAdmin, logout, token } = useAppContext();
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -26,7 +25,7 @@ const Navbar = () => {
           <>
             <button
               onClick={() => navigate('/login')}
-              className='flex items-center gap-2 rounded-full text-sm cursor-pointer bg-primary text-white px-5 py-2.5'
+              className='flex items-center gap-2 rounded-full text-sm cursor-pointer bg-primary text-white px-5 py-2.5 hover:scale-105 transition-all'
             >
               Login
               <img
@@ -38,7 +37,7 @@ const Navbar = () => {
 
             <button
               onClick={() => navigate('/admin')}
-              className='flex items-center gap-2 rounded-full text-sm cursor-pointer bg-primary text-white px-5 py-2.5'
+              className='flex items-center gap-2 rounded-full text-sm cursor-pointer bg-primary text-white px-5 py-2.5 hover:scale-105 transition-all'
             >
               Admin Login
               <img
@@ -55,14 +54,14 @@ const Navbar = () => {
           <>
             <button
               onClick={() => navigate(`/profile/${user.username}`)}
-              className='flex items-center gap-2 rounded-full text-sm cursor-pointer bg-primary text-white px-5 py-2.5'
+              className='flex items-center gap-2 rounded-full text-sm cursor-pointer bg-primary text-white px-5 py-2.5 hover:scale-105 transition-all'
             >
               Profile
             </button>
 
             <button
               onClick={logout}
-              className='flex items-center gap-2 rounded-full text-sm cursor-pointer bg-red-500 text-white px-5 py-2.5'
+              className='flex items-center gap-2 rounded-full text-sm cursor-pointer bg-red-500 text-white px-5 py-2.5 hover:scale-105 transition-all'
             >
               Logout
             </button>
@@ -96,7 +95,16 @@ const Navbar = () => {
         {/* THEME BUTTON */}
         <button
           onClick={toggleTheme}
-          className='cursor-pointer text-lg'
+          className='   flex items-center justify-center
+                        rounded-full
+                        text-lg
+                        bg-gray-100
+                        dark:bg-gray-800
+                        hover:bg-gray-200
+                        dark:hover:bg-gray-700
+                        cursor-pointer
+                        transition-all duration-200
+                        hover:scale-105"'
         >
           {theme === "light" ? "🌙" : "☀️"}
         </button>

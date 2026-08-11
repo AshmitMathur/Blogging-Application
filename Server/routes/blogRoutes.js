@@ -3,10 +3,11 @@ import { addBlog, addComment, deleteBlogById, generateContent, getAllBlogs, getB
 import upload from '../middlewares/multer.js';
 import auth from '../middlewares/Auth.js';
 import userAuth from "../middlewares/userAuth.js"
+import anyAuth from '../middlewares/anyauth.js';
 
 const blogRouter = express.Router();
 
-blogRouter.post("/add", userAuth,  upload.single('image'), addBlog);
+blogRouter.post("/add", anyAuth,  upload.single('image'), addBlog);
 blogRouter.put("/update/:blogId", userAuth, upload.single("image"), updateBlog);
 blogRouter.get("/all", getAllBlogs);
 blogRouter.get("/my-blogs", userAuth, getMyBlogs);
@@ -15,7 +16,7 @@ blogRouter.post("/delete", userAuth, deleteBlogById);
 blogRouter.post("/toggle-publish", auth, togglePublish);
 blogRouter.post("/add-comment", addComment);
 blogRouter.post("/comments", getBlogComments);
-blogRouter.post("/generate", auth, generateContent);
+blogRouter.post("/generate", anyAuth, generateContent);
 
 
 export default blogRouter;

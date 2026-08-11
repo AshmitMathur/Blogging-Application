@@ -26,7 +26,7 @@ const BlogCard = ({blog}) => {
                 e.stopPropagation();
                 navigate(`/edit-blog/${blog._id}`);
             }}
-            className="mt-3 px-4 py-2 bg-primary text-white rounded-lg cursor-pointer"
+            className="mt-3 px-4 py-2 bg-primary text-white rounded-lg cursor-pointer hover:scale-105 transition-all"
         >
             Edit
         </button>
@@ -61,7 +61,7 @@ const BlogCard = ({blog}) => {
                     );
                 }
             }}
-            className="mt-3 ml-2 px-4 py-2 bg-red-500 text-white rounded-lg cursor-pointer"
+            className="mt-3 ml-2 px-4 py-2 bg-red-500 text-white rounded-lg cursor-pointer hover:scale-105 transition-all"
         >
             Delete
         </button>

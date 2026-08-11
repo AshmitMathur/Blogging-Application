@@ -5,7 +5,7 @@ import { useTheme } from '../../../context/ThemeContext';
 import { assets } from '../../Assets/assets';
 
 const Login = () => {
-  const {axios, setToken, setIsAdmin} = useAppContext();
+  const {axios, setToken, setIsAdmin, navigate} = useAppContext();
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('');
     const {theme, toggleTheme} = useTheme();
@@ -39,7 +39,17 @@ const Login = () => {
 
       <button
     onClick={toggleTheme}
-    className="absolute top-5 right-5 cursor-pointer text-xl"
+    className="absolute top-5 right-5 cursor-pointer text-xl
+                        flex items-center justify-center
+                        rounded-full
+                        text-lg
+                        bg-gray-100
+                        dark:bg-gray-800
+                        hover:bg-gray-200
+                        dark:hover:bg-gray-700
+                        cursor-pointer
+                        transition-all duration-200
+                        hover:scale-105"
 >
     {theme === "light" ? "🌙" : "☀️"}
 </button>

@@ -9,8 +9,6 @@ const BlogTableItem = ({blog, fetchBlogs, index}) => {
     const {title, createdAt} = blog;
     const BlogDate = new Date(createdAt);
 
-    console.log(blog)
-
     const navigate = useNavigate();
 
     const { axios, fetchBlogs: fetchHomeBlogs } = useAppContext();

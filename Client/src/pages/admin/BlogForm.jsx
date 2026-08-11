@@ -4,9 +4,10 @@ import Quill from "quill";
 import { useAppContext } from "../../../context/AppContext";
 import toast from "react-hot-toast";
 import { parse } from "marked";
+import { useTheme } from "../../../context/ThemeContext";
 
 const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
-    const { axios, navigate } = useAppContext();
+    const { axios, navigate, fetchBlogs, fetchMyBlogs } = useAppContext();
 
     const [isAdding, setIsAdding] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -22,6 +23,7 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
     const [subTitle, setSubTitle] = useState("");
     const [category, setCategory] = useState("Startup");
     const [isPublished, setIsPublished] = useState(false);
+    const {theme, toggleTheme} = useTheme();
 
     useEffect(() => {
         if (!quillRef.current && editorRef.current) {
@@ -86,6 +88,9 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                 toast.success(data.message);
 
                 if (mode === "edit") {
+                    await fetchBlogs();
+                    await fetchMyBlogs();
+
                     navigate(redirectTo);
                     return;
                 }
@@ -142,11 +147,51 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
     };
 
     return (
+        <>
+                  <img
+            onClick={() => navigate('/')}
+            src={assets.logo}
+            alt="logo"
+            className="absolute top-5 left-5 cursor-pointer text-xl w-32 sm:w-44 cursor-pointer dark:invert"
+        />
+        
+              <button
+            onClick={toggleTheme}
+            className="absolute top-5 right-5 cursor-pointer text-xl
+                                flex items-center justify-center
+                                rounded-full
+                                text-lg
+                                bg-gray-100
+                                dark:bg-gray-800
+                                hover:bg-gray-200
+                                dark:hover:bg-gray-700
+                                cursor-pointer
+                                transition-all duration-200
+                                hover:scale-105"
+        >
+            {theme === "light" ? "🌙" : "☀️"}
+        </button>
         <form
             onSubmit={onSubmitHandler}
-            className="flex-1 bg-blue-50/50 text-gray-600 h-full overflow-scroll dark:bg-black"
+            className="        min-h-screen
+        bg-blue-50/50
+        text-gray-600
+        overflow-y-auto
+        dark:bg-black
+        flex
+        justify-center
+        items-start
+        p-5
+        sm:p-10"
         >
-            <div className="bg-white w-full max-w-3xl p-4 md:p-10 sm:m-10 shadow rounded dark:bg-gray-900">
+            <div className="        bg-white
+        w-full
+        max-w-3xl
+        p-4
+        md:p-10
+        shadow
+        rounded-xl
+        dark:bg-gray-900">
                 <p className="dark:text-gray-300">Upload Thumbnail</p>
 
                 <label htmlFor="image">
@@ -241,7 +286,7 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                 <button
                     type="submit"
                     disabled={isAdding}
-                    className="mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer disabled:opacity-50"
+                    className="mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer disabled:opacity-50 hover:scale-105 transition-all"
                 >
                     {isAdding
                         ? mode === "add"
@@ -253,7 +298,7 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                 </button>
             </div>
         </form>
+</>
     );
 };
-
 export default BlogForm;

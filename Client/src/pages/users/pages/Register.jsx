@@ -72,7 +72,17 @@ const Register = () => {
             />
     <button
     onClick={toggleTheme}
-    className="absolute top-5 right-5 cursor-pointer text-xl"
+    className="absolute top-5 right-5 cursor-pointer text-xl                             
+    flex items-center justify-center
+                        rounded-full
+                        text-lg
+                        bg-gray-100
+                        dark:bg-gray-800
+                        hover:bg-gray-200
+                        dark:hover:bg-gray-700
+                        cursor-pointer
+                        transition-all duration-200
+                        hover:scale-105"
 >
     {theme === "light" ? "🌙" : "☀️"}
 </button>
