@@ -8,7 +8,7 @@ const Footer = () => {
       <div className='flex flex-col md:flex-row items-start justify-between gap-10 py-10 border-b border-gray-500/30 text-gray-500'>
       
       <div>
-        <img src={assets.logo} alt="logo" className='w-32 sm:w-44' />
+        <img src={assets.logo} alt="logo" className='w-32 sm:w-44 dark:invert' />
         <p className='max-w-[410px] mt-6 dark:text-gray-200'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi totam, odio atque officia deserunt accusantium eaque animi explicabo temporibus, dicta qui voluptates voluptatum reprehenderit inventore nemo itaque necessitatibus vel ab.
         </p>
       </div>

@@ -148,41 +148,15 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
 
     return (
         <>
-                  <img
-            onClick={() => navigate('/')}
-            src={assets.logo}
-            alt="logo"
-            className="absolute top-5 left-5 cursor-pointer text-xl w-32 sm:w-44 cursor-pointer dark:invert"
-        />
-        
-              <button
-            onClick={toggleTheme}
-            className="absolute top-5 right-5 cursor-pointer text-xl
-                                flex items-center justify-center
-                                rounded-full
-                                text-lg
-                                bg-gray-100
-                                dark:bg-gray-800
-                                hover:bg-gray-200
-                                dark:hover:bg-gray-700
-                                cursor-pointer
-                                transition-all duration-200
-                                hover:scale-105"
-        >
-            {theme === "light" ? "🌙" : "☀️"}
-        </button>
         <form
             onSubmit={onSubmitHandler}
-            className="        min-h-screen
-        bg-blue-50/50
-        text-gray-600
-        overflow-y-auto
-        dark:bg-black
-        flex
-        justify-center
-        items-start
-        p-5
-        sm:p-10"
+className=" w-full overflow-y-auto flex justify-center items-start
+ bg-gradient-to-br from-gray-50 via-white to-blue-50
+ dark:from-gray-950 dark:via-gray-950 dark:to-gray-900
+ text-gray-700 dark:text-gray-300
+  px-4 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-14
+ transition-colors duration-300
+"
         >
             <div className="        bg-white
         w-full

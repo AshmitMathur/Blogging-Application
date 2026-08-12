@@ -4,7 +4,7 @@ import { assets } from '../../Assets/assets'
 
 const Sidebar = () => {
   return (
-    <div className='flex flex-col border-r border-gray-200 min-h-full pt-6 dark:bg-gray-950'>
+    <div className='flex flex-col border-r border-gray-200 pt-6 dark:bg-gray-950'>
 
 
       <NavLink end={true} to='/admin' className={({isActive}) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-64 cursor-pointer dark:text-gray-300 ${isActive && "bg-primary/10 border-r-4 border-primary"}`}>
@@ -12,7 +12,7 @@ const Sidebar = () => {
         <p className='hidden md:inline-block'>DashBoard</p>
       </NavLink>
 
-      <NavLink  to='/admin/addblog' className={({isActive}) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-64 cursor-pointer dark:text-gray-300 ${isActive && "bg-primary/10 border-r-4 border-primary"}`}>
+      <NavLink  to='/admin/Addblog' className={({isActive}) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-64 cursor-pointer dark:text-gray-300 ${isActive && "bg-primary/10 border-r-4 border-primary"}`}>
         <img src={assets.add_icon} alt="" className='min-w-4 w-5'/>
         <p className='hidden md:inline-block'>Add Blogs</p>
       </NavLink>

@@ -52,7 +52,7 @@ const Profile = () => {
         <>
             <Navbar />
 
-            <main className="min-h-screen bg-gray-50 dark:bg-black">
+            <main className="bg-gray-50 dark:bg-black">
 
                 {/* Profile Header */}
                 <section className="max-w-5xl mx-auto px-5 pt-12 pb-10">

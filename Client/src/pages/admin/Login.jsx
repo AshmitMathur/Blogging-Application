@@ -34,7 +34,7 @@ const Login = () => {
     onClick={() => navigate('/')}
     src={assets.logo}
     alt="logo"
-    className="absolute top-5 left-5 cursor-pointer text-xl w-32 sm:w-44 cursor-pointer dark:invert"
+    className="absolute top-5 left-5 cursor-pointer text-xl w-32 sm:w-44  dark:invert"
 />
 
       <button
