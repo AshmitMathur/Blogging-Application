@@ -1,15 +1,14 @@
 import jwt from "jsonwebtoken";
 
-const anyAuth = (req, res, next) => {
+const optionalAuth = (req, res, next) => {
     const token = req.headers.authorization;
-
     if (!token) {
-        return res.json({
-            success: false,
-            message: "Authentication required"
-        });
-    }
+        req.userId = null;
+        req.role = null;
+        req.user = null;
 
+        return next();
+    }
     try {
         const decoded = jwt.verify(
             token,
@@ -22,12 +21,12 @@ const anyAuth = (req, res, next) => {
 
         next();
 
-    } catch (error) {
-        return res.json({
-            success: false,
-            message: "Invalid or expired token"
-        });
+    } catch (error) { req.userId = null;
+        req.role = null;
+        req.user = null;
+
+        next();
     }
 };
 
-export default anyAuth;
+export default optionalAuth;

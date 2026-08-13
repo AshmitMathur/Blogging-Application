@@ -86,11 +86,11 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
 
             if (data.success) {
                 toast.success(data.message);
-
+                await fetchBlogs();
+                
                 if (mode === "edit") {
-                    await fetchBlogs();
+                    
                     await fetchMyBlogs();
-
                     navigate(redirectTo);
                     return;
                 }

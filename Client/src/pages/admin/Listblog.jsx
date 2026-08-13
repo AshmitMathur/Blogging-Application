@@ -29,7 +29,7 @@ useEffect(() => {
 }, []);
 
   return (
-    <div className='flex-1 h-4/5 mt-4 pt-5 px-5 sm:pt-12 sm:pl-16 bg-blue-50/50 dark:bg-gray-950'>
+    <div className='flex-1 min-h-screen mt-4 pt-5 px-5 sm:pt-12 sm:pl-16 bg-blue-50/50 dark:bg-gray-950'>
       <h1 className='m-2 dark:text-gray-200'>All Blogs</h1>
                   <div className='relative max-w-4xl overflow-x-auto shadow rounded-lg scrollbar-hide bg-white dark:bg-gray-700'>
                 <table className='w-full text-sm text-gray-500'>

@@ -5,10 +5,12 @@ import toast from 'react-hot-toast';
 
 const BlogCard = ({blog}) => {
     const {title, description, category,image, _id} = blog;
-    const { user, axios, removeBlog } = useAppContext();
+    const { user, axios, removeBlog, isAdmin } = useAppContext();
     const navigate = useNavigate();
+    
+    const isOwner = isAdmin ||
+    (user && blog.author?._id === user._id);
 
-    const isOwner = user && blog.author?._id === user._id;
 
   return (
     <div onClick={()=> navigate(`/blog/${_id}`)} className='w-full rounded-lg overflow-hidden shadow hover:scale-102 hover:shadow-primary/25 duration-300 cursor-pointer dark:bg-gray-950'>

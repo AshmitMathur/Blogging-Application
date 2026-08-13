@@ -65,7 +65,17 @@ const togglePublish = async () => {
         <button onClick={() => navigate(`/admin/editblog/${blog._id}`)}
     className="border px-2 py-0.5 mt-1 rounded cursor-pointer dark:text-gray-200"
 >Edit</button>
-        <img src={assets.cross_icon} className='w-8 hover:scale-110 transition-all cursor-pointer' alt=""  onClick={deleteBlog}/>
+<button
+    onClick={deleteBlog}
+    className="p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition"
+    title="Delete blog"
+>
+    <img
+        src={assets.cross_icon}
+        className="w-5 h-5 hover:scale-150 transition cursor-pointer"
+        alt="Delete"
+    />
+</button>
       </td>
     </tr>
   )

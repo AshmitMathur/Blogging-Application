@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 const Blog = () => {
   const {id} = useParams();
 
-  const {axios} = useAppContext();
+  const {axios, user, isAdmin} = useAppContext();
 
 
   const [data, setData] = useState(null);
@@ -86,82 +86,243 @@ useEffect(() => {
     <div className='relative'>
       <img src={assets.gradientBackground} alt="" className='absolute -top-50 -z-1 opacity-50' />
       <Navbar/>
-        <div className='text-center mt-20 text-gray-600'>
-          <p className='dark:text-gray-300'>Published on {Moment(data.createdAt).format('Do MMMM YYYY')}</p>
-          <h1 className='text-2xl sm:text-5xl font-semibold max-w-2xl mx-auto text-gray-800 dark:text-gray-300'>{data.title}</h1>
-          <h2 className='my-5 max-w-lg truncate mx-auto dark:text-gray-300'>{data.subTitle}</h2>
-              {data.author ? (<div className="inline-flex items-center gap-3 mt-6 hover:opacity-80 transition cursor-pointer">
-<Link
-    to={`/profile/${data.author?.username}`}
-    className="flex items-center justify-center gap-3  hover:opacity-80 transition"
->
-    <img
-        src={data.author?.avatar || assets.user_icon}
-        alt={data.author?.name}
-        className="w-12 h-12 rounded-full object-cover"
-    />
+<div className="max-w-4xl mx-auto text-center pt-16 pb-10 px-5">
 
-    <div className="text-left">
-        <p className="font-semibold dark:text-gray-300">
-            {data.author?.name}
+    {/* Category */}
+    <span className="inline-block px-4 py-1.5  mb-5  text-sm font-medium text-primary bg-primary/10  border border-primary/20 rounded-full
+    ">
+        {data.category}
+    </span>
+
+    {/* Date */}
+    <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+        Published on {Moment(data.createdAt).format("Do MMMM YYYY")}
+    </p>
+
+    {/* Title */}
+    <h1 className=" text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white
+    ">
+        {data.title}
+    </h1>
+
+    {/* Subtitle */}
+    {data.subTitle && (
+        <p className=" mt-5 text-base sm:text-lg leading-relaxed text-gray-500  dark:text-gray-400 max-w-2xl mx-auto
+        ">
+            {data.subTitle}
         </p>
+    )}
 
-        <p className="text-sm text-gray-500">
-            @{data.author?.username}
-        </p>
-    </div>
-</Link>
+    {/* Author */}
+    {data.author ? (
+        <Link
+            to={`/profile/${data.author.username}`}
+            className=" inline-flex items-center gap-3 mt-8 px-4 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition
+            "
+        >
+            <img
+                src={data.author.avatar || assets.user_icon}
+                alt={data.author.name}
+                className="  w-11 h-11 rounded-full object-cover border border-gray-200 dark:border-gray-700
+                "
+            />
 
-    </div>) : (
-    <p className="mt-6 text-sm text-gray-500 dark:text-gray-400">
-        Published by Admin
-    </p> )}
+            <div className="text-left">
+                <p className=" text-sm font-semibold text-gray-900 dark:text-white
+                ">
+                    {data.author.name}
+                </p>
+
+                <p className=" text-xs  text-gray-500 dark:text-gray-400
+                ">
+                    @{data.author.username}
+                </p>
+            </div>
+        </Link>
+    ) : (
+        <div className="  inline-flex  items-center  gap-2 mt-8  px-4 py-2 rounded-xl  bg-gray-100 dark:bg-gray-800 text-sm text-gray-500 dark:text-gray-400
+        ">
+            <span>✦</span>
+            Published by Admin
         </div>
+    )}
+
+</div>
         {/* inline-block py-1 px-4 rounded-full mb-6 border text-sm border-primary/35 bg-primary/5 font-medium text-primary */}
 
         <div className='mx-5 max-w-5xl md:mx-auto my-10 mt-6 dark:text-gray-300'>
           <img
-    src={data.image || assets.blog_icon} alt={data.title}  className='rounded-3xl mb-5' />
-          <div className='rich-text max-w-3xl mx-auto ' dangerouslySetInnerHTML={{__html: data.description}}></div>
+    src={data.image || assets.blog_icon} alt={data.title}  className='            w-full aspect-[16/9] object-cover rounded-2xl sm:rounded-3xl shadow-lg  border border-gray-100 dark:border-gray-800 hover:scale-[1.01]' />
+          <div className='rich-text max-w-3xl mx-auto mt-12 px-1 text-gray-700 dark:text-gray-300 leading-8' dangerouslySetInnerHTML={{__html: data.description}}></div>
 
             <div className='mt-14 mb-10 max-w-3xl mx-auto'>
-              <p className='mt-14 mb-10 max-w-3xl mx-auto'>Comments ({comments.length}) </p>
-              <div className='flex flex-col gap-4'>
-                {comments.map((item, index) => (
-                  <div key={index} className='relative bg-primary/2 border border-primary/5 max-w-xl p-4 rounded text-gray-600'>
-                    <div>
-                      <img src={assets.user_icon} alt="" className='w-6'/>
-                      <p className='font-medium dark:text-gray-300'>{item.name}</p>
-                    </div>
-                    <p className='text-sm max-w-md ml-8 dark:text-gray-300'>{item.content}</p>
-                    <div className="absolute right-4 bottom-3 flex items-center gap-2 text-xs dark:text-gray-300">{Moment(item.createdAt).fromNow()}</div>
-                    </div>
-                ))}
-              </div>
+<div className="flex items-center justify-between mb-6">
+
+    <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+        Comments
+    </h2>
+
+    <span
+        className="  px-3 py-1  text-xs font-medium rounded-full bg-primary/10 text-primary
+        "
+    > {comments.length}
+    </span>
+
+</div>
+<div className="flex flex-col gap-4">
+    {comments.map((item, index) => (
+        <div
+            key={index}
+            className=" relative  p-5  rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-shadow
+            ">
+            <div className="flex items-center gap-3">
+                <img
+                    src={assets.user_icon}
+                    alt=""
+                    className="w-6 h-6 rounded-full"
+                />
+                <p className="font-medium dark:text-gray-300">
+                    {item.name}
+                </p>
+            </div>
+            <p className="text-sm max-w-md ml-9 mt-2 dark:text-gray-300">
+                {item.content}
+            </p>
+            {/* Timestamp */}
+            <div className="mt-3 text-xs text-gray-400 dark:text-gray-500">
+                {Moment(item.createdAt).fromNow()}
+            </div>
+        </div>
+    ))}
+</div>
             </div>
 
               {/* Add comment Section */}
-            <div className='max-w-3xl mx-auto'>
-                <p className='font-semibold mb-4 dark:text-gray-300'> Add Your Comment</p>
-                <form onSubmit={addComment} className="flex flex-col items-start gap-4 max-w-lg"  action="">
-                  <input onChange={(e) => setName(e.target.value)} value={name}type="text" placeholder='Name' className='w-full p-2 border border-gray-300 rounded outline-none dark:text-gray-300' required />
+<div
+    className=" max-w-3xl mx-auto mt-16 p-6 sm:p-8 rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/60
+    "
+>
 
+    <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+        Leave a comment
+    </h2>
 
-                  <textarea onChange={(e)=> setContent(e.target.value)} value={content} className='w-full p-2 border border-gray-300 rounded outline-none h-48 dark:text-gray-300' placeholder='Comment' required></textarea>
+    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 mb-6">
+        Share your thoughts about this article.
+    </p>
 
-                  <button type='submit' className='bg-primary text-white rounded p-2 px-8 hover:scale-102 transition-all cursor-pointer'>Submit</button>
-                </form>
+    {user && !isAdmin && (
+    <div className="flex items-center gap-3 mb-5">
+        <img
+            src={user.avatar || assets.user_icon}
+            alt={user.name}
+            className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-gray-700"
+        />
 
-            </div>
+        <div>
+            <p className="font-semibold text-gray-900 dark:text-white">
+                {user.name}
+            </p>
 
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+                @{user.username}
+            </p>
+        </div>
+    </div>
+)}
+
+{isAdmin && (
+    <div className="flex items-center gap-3 mb-5">
+        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            👑
+        </div>
+
+        <div>
+            <p className="font-semibold text-gray-900 dark:text-white">
+                Admin
+            </p>
+
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+                Posting as administrator
+            </p>
+        </div>
+    </div>
+)}
+
+    <form
+        onSubmit={addComment}
+        className="flex flex-col gap-4"
+    >
+
+{!user && !isAdmin && (
+    <input
+        onChange={(e) => setName(e.target.value)}
+        value={name}
+        type="text"
+        placeholder="Your name"
+        required
+        className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
+    />
+)}
+
+        <textarea
+            onChange={(e) => setContent(e.target.value)}
+            value={content}
+            placeholder="Write your comment..."
+            required
+            className=" w-full min-h-36 px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white outline-none resize-y focus:ring-2 focus:ring-primary/30 focus:border-primary transition
+            "
+        />
+        <div className="flex justify-end">
+            <button
+                type="submit"
+                className=" px-6 py-3  rounded-xl  bg-primary text-white font-medium hover:bg-primary/90 hover:shadow-md active:scale-95 transition-all cursor-pointer
+                "> Post Comment
+            </button>
+        </div>
+    </form>
+</div>
             {/* {Social media Buttons} */}
-            <div className='my-24 max-w-3xl mx-auto dark:text-gray-300'>
+            <div className='my-6 max-w-3xl mx-auto dark:text-gray-300'>
               <p className='font-semibold my-4'>Share This Article on Social Media</p>
-              <div className='flex'>
-                <img src={assets.twitter_icon} alt="" />
-                <img src={assets.googleplus_icon} alt="" />
-                <img src={assets.facebook_icon} alt="" />
-              </div>
+              <div
+    className="  max-w-3xl mx-auto my-15
+        pt-10 border-t border-gray-200 dark:border-gray-800 text-center
+    "
+>
+
+    <p className="font-semibold text-gray-900 dark:text-white mb-5">
+        Enjoyed this article?
+    </p>
+
+    <div className="flex justify-center gap-3">
+
+        <button
+            onClick={() =>
+                navigator.clipboard.writeText(window.location.href)
+            }
+            className="  px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition cursor-pointer
+            "
+        >
+            🔗 Copy Link
+        </button>
+
+        <button
+            onClick={() => {
+                navigator.share?.({
+                    title: data.title,
+                    url: window.location.href,
+                });
+            }}
+            className=" px-4 py-2  rounded-lg bg-primary text-white text-sm hover:bg-primary/90 transition cursor-pointer
+            "
+        >
+            Share
+        </button>
+
+    </div>
+
+</div>
             </div>
           </div>
           <Footer/>

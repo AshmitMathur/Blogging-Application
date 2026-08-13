@@ -3,6 +3,7 @@ import imagekit from '../configs/imagekit.js';
 import Blog from '../models/Blog.js';
 import Comment from '../models/comment.js';
 import main from '../configs/gemini.js';
+import User from "../models/User.js"
 
 export const addBlog = async (req, res)=>{
     try {
@@ -32,13 +33,7 @@ export const addBlog = async (req, res)=>{
 
         const image = optimizedImageUrl;
 
- const blogData = {
-            title,
-            subTitle,
-            description,
-            category,
-            image: optimizedImageUrl,
-            isPublished
+ const blogData = { title, subTitle, description, category, image: optimizedImageUrl, isPublished
         };
         if (req.role === "user") {
             blogData.author = req.userId;
@@ -142,27 +137,56 @@ export const togglePublish = async(req, res) => {
 
 export const addComment = async (req, res) => {
     try {
-
         const { blogId, name, content } = req.body;
-
+        if (!blogId || !content) {
+            return res.json({
+                success: false,
+                message: "Comment content is required"
+            });
+        }
+        let commentName = name;
+        let userId = null;
+        if (req.role === "user" && req.userId) {
+            const user = await User.findById(req.userId);
+            if (!user) {
+                return res.json({
+                    success: false,
+                    message: "User not found"
+                });
+            }
+            userId = user._id;
+            commentName = user.name;
+        }
+        if (req.role === "admin") {
+            commentName = "Admin";
+        }
+        if (!req.role) {
+            if (!name) {
+                return res.json({
+                    success: false,
+                    message: "Name is required"
+                });
+            }
+        }
         await Comment.create({
             blog: blogId,
-            name,
+            user: userId,
+            name: commentName,
             content
         });
-
         res.json({
             success: true,
             message: "Comment added for review"
         });
-
     } catch (error) {
+        console.error("Add Comment Error:", error);
+
         res.json({
             success: false,
             message: error.message
         });
     }
-}
+};
 
 export const getBlogComments = async(req, res) =>{
     try {
