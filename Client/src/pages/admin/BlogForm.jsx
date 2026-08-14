@@ -7,7 +7,7 @@ import { parse } from "marked";
 import { useTheme } from "../../../context/ThemeContext";
 
 const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
-    const { axios, navigate, fetchBlogs, fetchMyBlogs } = useAppContext();
+    const { axios, navigate, fetchBlogs, fetchMyBlogs, isAdmin } = useAppContext();
 
     const [isAdding, setIsAdding] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -21,7 +21,7 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
 
     const [title, setTitle] = useState("");
     const [subTitle, setSubTitle] = useState("");
-    const [category, setCategory] = useState("Startup");
+    const [category, setCategory] = useState("");
     const [isPublished, setIsPublished] = useState(false);
     const {theme, toggleTheme} = useTheme();
 
@@ -90,6 +90,7 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                 
                 if (mode === "edit") {
                     
+                    if(!isAdmin)
                     await fetchMyBlogs();
                     navigate(redirectTo);
                     return;
@@ -158,22 +159,13 @@ className=" w-full overflow-y-auto flex justify-center items-start
  transition-colors duration-300
 "
         >
-            <div className="        bg-white
-        w-full
-        max-w-3xl
-        p-4
-        md:p-10
-        shadow
-        rounded-xl
-        dark:bg-gray-900">
+            <div className="bg-white w-full max-w-3xl  p-4  md:p-10 shadow  rounded-xl dark:bg-gray-900">
                 <p className="dark:text-gray-300">Upload Thumbnail</p>
 
                 <label htmlFor="image">
                     <img
                         src={
-                            image
-                                ? URL.createObjectURL(image)
-                                : existingImage || assets.upload_area
+                            image ? URL.createObjectURL(image) : existingImage || assets.upload_area
                         }
                         alt=""
                         className="mt-2 h-16 rounded cursor-pointer"
@@ -239,6 +231,9 @@ className=" w-full overflow-y-auto flex justify-center items-start
                     onChange={(e) => setCategory(e.target.value)}
                     className="mt-2 px-3 py-2 border border-gray-300 rounded text-gray-500 dark:bg-gray-700 dark:text-gray-300"
                 >
+                        <option value="" disabled>
+                            Select a Category
+                        </option>
                     {blogCategories.map((item, index) => (
                         <option key={index} value={item}>
                             {item}

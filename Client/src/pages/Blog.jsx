@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 const Blog = () => {
   const {id} = useParams();
 
-  const {axios, user, isAdmin} = useAppContext();
+  const {axios, user, isAdmin, fetchBlogs} = useAppContext();
 
 
   const [data, setData] = useState(null);
@@ -20,6 +20,9 @@ const Blog = () => {
 
   const [name, setName] = useState('')
   const [content, setContent] = useState('')
+
+  const [likeCount, setLikeCount] = useState(0);
+  const [liked, setLiked] = useState(false);
 
 const fetchBlogData = async () => {
     try {
@@ -52,6 +55,45 @@ const fetchComments = async () => {
         toast.error(error.message);
     }
 };
+const fetchLikeData = async () => {
+    try {
+        const { data } = await axios.get(`/api/blog/like/${id}`);
+
+        if (data.success) {
+            setLikeCount(data.likeCount);
+            setLiked(data.liked);
+        } else {
+            toast.error(data.message);
+        }
+    } catch (error) {
+        toast.error(error.message);
+    }
+};
+
+const handleLike = async () => {
+    if (!user) {
+        toast.error("Please login to like this blog");
+        return;
+    }
+
+    try {
+        const { data } = await axios.post(`/api/blog/like/${id}`);
+
+        if (data.success) {
+            setLiked(data.liked);
+            setLikeCount((prev) =>
+                data.liked ? prev + 1 : prev - 1
+            );
+            await fetchBlogs();
+        } else {
+            toast.error(data.message);
+        }
+    } catch (error) {
+        toast.error(
+            error.response?.data?.message || "Please login to like this blog"
+        );
+    }
+};
 
   const addComment = async (e)=> {
     e.preventDefault();
@@ -77,6 +119,7 @@ useEffect(() => {
     const fetchData = async () => {
         await fetchBlogData();
         await fetchComments();
+        await fetchLikeData();
     };
 
     fetchData();
@@ -153,7 +196,34 @@ useEffect(() => {
         <div className='mx-5 max-w-5xl md:mx-auto my-10 mt-6 dark:text-gray-300'>
           <img
     src={data.image || assets.blog_icon} alt={data.title}  className='            w-full aspect-[16/9] object-cover rounded-2xl sm:rounded-3xl shadow-lg  border border-gray-100 dark:border-gray-800 hover:scale-[1.01]' />
-          <div className='rich-text max-w-3xl mx-auto mt-12 px-1 text-gray-700 dark:text-gray-300 leading-8' dangerouslySetInnerHTML={{__html: data.description}}></div>
+          <div className='rich-text max-w-3xl mx-auto mt-12 px-1 text-gray-700 dark:text-gray-300 leading-8' dangerouslySetInnerHTML={{__html: data.description}}>
+          </div>
+          <div className="max-w-3xl mx-auto mt-8 flex items-center gap-3">
+
+    <button
+        onClick={handleLike}
+        className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border transition-all cursor-pointer
+            ${
+                liked
+                    ? "bg-red-50 border-red-200 text-red-500 dark:bg-red-950/30 dark:border-red-900"
+                    : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-300 dark:hover:bg-gray-800"
+            }
+        `}
+    >
+        <span className="text-xl">
+            {liked ? "❤️" : "🤍"}
+        </span>
+
+        <span className="font-medium">
+            {likeCount}
+        </span>
+
+        <span>
+            {liked ? "Liked" : "Like"}
+        </span>
+    </button>
+
+</div>
 
             <div className='mt-14 mb-10 max-w-3xl mx-auto'>
 <div className="flex items-center justify-between mb-6">

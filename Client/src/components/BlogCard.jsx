@@ -4,7 +4,7 @@ import { useAppContext } from '../../context/AppContext';
 import toast from 'react-hot-toast';
 
 const BlogCard = ({blog}) => {
-    const {title, description, category,image, _id} = blog;
+    const {title, description, category,image, _id, likeCount} = blog;
     const { user, axios, removeBlog, isAdmin } = useAppContext();
     const navigate = useNavigate();
     
@@ -21,6 +21,10 @@ const BlogCard = ({blog}) => {
       <div className='p-5'>
         <h5 className='mb-2 font-medium text-gray-900 dark:text-gray-100'>{title}</h5>
         <p className='mb-3 text-xs text-gray-600 dark:text-gray-100' dangerouslySetInnerHTML={{"__html": description.slice(0, 80)}}></p>
+        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-3">
+    <span>❤️</span>
+    <span>{likeCount || 0}</span>
+</div>
 {isOwner && (
     <>
         <button

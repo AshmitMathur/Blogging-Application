@@ -4,6 +4,7 @@ import Blog from '../models/Blog.js';
 import Comment from '../models/comment.js';
 import main from '../configs/gemini.js';
 import User from "../models/User.js"
+import Like from '../models/Like.js';
 
 export const addBlog = async (req, res)=>{
     try {
@@ -56,7 +57,21 @@ export const getAllBlogs = async(req, res)=> {
     try {
         const blogs = await Blog.find({ isPublished: true })
         .populate("author", "name username avatar");
-        res.json({success: true, blogs})
+
+                const blogsWithLikes = await Promise.all(
+            blogs.map(async (blog) => {
+                const likeCount = await Like.countDocuments({
+                    blog: blog._id
+                });
+
+                return {
+                    ...blog.toObject(),
+                    likeCount
+                };
+            })
+        );
+
+        res.json({success: true, blogs: blogsWithLikes})
     } catch (error) {
         res.json({success: false, message: error.message})
     }
@@ -90,17 +105,17 @@ if (!blog) {
     });
 }
 
-if (blog.author && blog.author.toString() !== req.userId) {
+if ( req.role !== "admin" && blog.author && blog.author.toString() !== req.userId
+) {
     return res.json({
         success: false,
         message: "You are not authorized to delete this blog",
     });
 }
 
-await Blog.findByIdAndDelete(id);
-
-        // Delete comments 
         await Comment.deleteMany({blog: id});
+        await Like.deleteMany({blog: id});
+        await Blog.findByIdAndDelete(id);
         res.json({success: true, message: "Blog Deleted Successfully"})
 
     } catch (error) {
@@ -119,13 +134,6 @@ export const togglePublish = async(req, res) => {
         message: "Blog not found",
     });
 }
-
-// if (blog.author && blog.author.toString() !== req.userId) {
-//     return res.json({
-//         success: false,
-//         message: "You are not authorized",
-//     });
-// }
 
         blog.isPublished = !blog.isPublished;
         await blog.save();

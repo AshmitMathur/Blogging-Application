@@ -10,7 +10,7 @@ import { blogCategories } from "../../../Assets/assets.js";
 
 
 const WriteBlog = () => {
-    const { axios } = useAppContext();
+    const { axios , fetchBlogs } = useAppContext();
     const navigate = useNavigate();
 
     const [title, setTitle] = useState("");
@@ -107,6 +107,8 @@ if (
         if (data.success) {
             toast.success(data.message);
 
+            await fetchBlogs();
+
             setTitle("");
             setSubTitle("");
             setCategory("");
@@ -172,8 +174,6 @@ if (
                             className="w-full p-3 border border-gray-300 rounded-lg outline-none focus:border-primary dark:bg-zinc-900 dark:border-zinc-700 dark:text-white"
                         />
                     </div>
-
-
                     {/* Image */}
                     <div>
                         <label className="block font-medium mb-2 dark:text-gray-300">
@@ -194,51 +194,34 @@ if (
                         )}
                     </div>
 
-                    {/* Content */}
+{/* Content */}
 <div>
+    <p className="font-medium mb-2 dark:text-gray-300">
+        Content
+    </p>
 
-    <div className="flex items-center justify-between mb-2">
+    <div className="w-full max-w-3xl h-74 pb-16 sm:pb-10 pt-2 relative">
+        
+        {/* Quill Editor */}
+        <div ref={editorRef}></div>
 
-        <label className="font-medium dark:text-gray-300">
-            Content
-        </label>
+        {/* Loading Overlay */}
+        {isGenerating && (
+            <div className="absolute inset-0 z-50 bg-gray-200/50 dark:bg-gray-800/50 flex items-center justify-center">
+                <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        )}
+
+        {/* Generate With AI Button */}
         <button
             type="button"
-            onClick={generateContent}
             disabled={isGenerating}
-            className="
-                px-4 py-2
-                bg-primary
-                text-white
-                rounded-lg
-                text-sm
-                font-medium
-                cursor-pointer
-                hover:bg-primary/90
-                transition
-                disabled:opacity-50
-                disabled:cursor-not-allowed
-            "
+            onClick={generateContent}
+            className="absolute bottom-1 right-2 text-xs text-white bg-black/70 px-4 py-1.5 rounded cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
-            {isGenerating
-                ? "Generating..."
-                : "✨ Generate with AI"}
+            {isGenerating ? "Generating..." : "Generate With AI"}
         </button>
-
     </div>
-
-    <div className="w-full max-w-3xl">
-        <div
-            ref={editorRef}
-            className="
-                min-h-72
-                bg-white
-                dark:bg-zinc-900
-                dark:text-white
-            "
-        ></div>
-    </div>
-
 </div>
 
                     {/* Category */}
@@ -253,6 +236,9 @@ if (
                     className="mt-2 px-3 py-2 border border-gray-300 rounded text-gray-500 dark:bg-gray-700 dark:text-gray-300
                     cursor-pointer"
                 >
+                        <option value="" disabled>
+                            Select a category
+                        </option>
                     {blogCategories.map((item, index) => (
                         <option key={index} value={item}>
                             {item}
