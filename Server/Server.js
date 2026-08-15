@@ -7,6 +7,7 @@ import adminRouter from './routes/adminroutes.js';
 import blogRouter from './routes/blogRoutes.js';
 import authRouter from './routes/authRoutes.js';
 import userRouter from "./routes/userRoutes.js";
+import newsletterRouter from "./routes/newsLetterRoutes.js";
 
 dns.setServers(['1.1.1.1', '8.8.8.8']);
 
@@ -24,6 +25,7 @@ app.use('/api/admin', adminRouter)
 app.use('/api/blog', blogRouter)
 app.use("/api/auth", authRouter)
 app.use("/api/user", userRouter);
+app.use("/api/newsletter", newsletterRouter);
 
 const PORT = process.env.PORT || 3000;
 
