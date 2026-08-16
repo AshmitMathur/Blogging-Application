@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import Blog from '../models/Blog.js';
 import Comment from '../models/comment.js';
+import Newsletter from '../models/NewsLetter.js';
 
 export const adminLogin = async (req, res) => {
     try {
@@ -58,9 +59,10 @@ export const getDashboard = async(req, res)=> {
         const blogs = await Blog.countDocuments();
         const comments = await Comment.countDocuments();
         const drafts = await Blog.countDocuments({isPublished: false});
+        const newsletterSubscribers = await Newsletter.countDocuments();
 
         const dashboardData = {
-            blogs, comments, drafts, recentBlogs
+            blogs, comments, drafts, recentBlogs, newsletterSubscribers
         }
         res.json({success: true, dashboardData});
     } catch (error) {

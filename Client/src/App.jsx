@@ -17,10 +17,14 @@ import UserLogin from './pages/users/pages/userLogin'
 import Profile from "./pages/users/pages/Profile";
 import EditProfile from "./pages/users/pages/EditProfile";
 import WriteBlog from "./pages/users/pages/WriteBlog";
+import Newsletter from './pages/admin/NewsLetter'
 
 const App = () => {
 
-  const { isAdmin} = useAppContext();
+  const { isAdmin , authLoading} = useAppContext();
+  if (authLoading) {
+    return null;
+}
   return (
     <div className='dark:bg-black'> 
       <Toaster/>
@@ -40,6 +44,7 @@ const App = () => {
             <Route path="addblog" element={<Addblog />} />
             <Route path="listblog" element={<Listblog />} />
             <Route path="comments" element={<Comments />} />
+            <Route path="newsletter" element={<Newsletter />} />
             <Route path="editblog/:id" element={<EditBlog />} />
         </Route>
     ) : (
