@@ -21,7 +21,7 @@ if (decoded.role !== "user") {
 }
 
 req.userId = decoded.id;
-
+req.role = decoded.role;
 next();
 
     }catch(error){

@@ -1,51 +1,65 @@
-import React from 'react'
-import { NavLink } from 'react-router-dom'
-import { assets } from '../../Assets/assets'
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { assets } from '../../Assets/assets';
 
 const Sidebar = () => {
-  return (
-    <div className='flex flex-col min-h-screen border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 pt-6'>
+    const navItems = [
+        {
+            to: '/admin',
+            label: 'Dashboard',
+            icon: assets.home_icon,
+            end: true
+        },
+        {
+            to: '/admin/addblog',
+            label: 'Add Blogs',
+            icon: assets.add_icon
+        },
+        {
+            to: '/admin/listblog',
+            label: 'List Blogs',
+            icon: assets.list_icon
+        },
+        {
+            to: '/admin/comments',
+            label: 'Comments',
+            icon: assets.comment_icon
+        },
+        {
+            to: '/admin/newsletter',
+            label: 'Newsletter',
+            icon: assets.list_icon
+        }
+    ];
 
+    return (
+        <aside className='flex flex-col min-h-screen w-16 md:w-64 shrink-0 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 pt-6'>
+            {navItems.map((item) => (
+                <NavLink
+                    key={item.to}
+                    to={item.to}
+                    end={item.end}
+                    className={({ isActive }) =>
+                        `group flex items-center gap-3 py-3.5 px-3 md:px-8 border-r-4 transition-all duration-200 ${
+                            isActive
+                                ? 'bg-primary/10 border-primary text-primary'
+                                : 'border-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
+                        }`
+                    }
+                >
+                    <img
+                        src={item.icon}
+                        alt={item.label}
+                        className='w-5 h-5 shrink-0'
+                    />
 
-      <NavLink end={true} to='/admin' className={({isActive}) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-64 cursor-pointer dark:text-gray-300 ${isActive && "bg-primary/10 border-r-4 border-primary"}`}>
-        <img src={assets.home_icon} alt="" className='min-w-4 w-5'/>
-        <p className='hidden md:inline-block'>DashBoard</p>
-      </NavLink>
+                    <p className='hidden md:inline-block text-sm font-medium'>
+                        {item.label}
+                    </p>
+                </NavLink>
+            ))}
+        </aside>
+    );
+};
 
-      <NavLink  to='/admin/addblog' className={({isActive}) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-64 cursor-pointer dark:text-gray-300 ${isActive && "bg-primary/10 border-r-4 border-primary"}`}>
-        <img src={assets.add_icon} alt="" className='min-w-4 w-5'/>
-        <p className='hidden md:inline-block'>Add Blogs</p>
-      </NavLink>
-
-      <NavLink  to='/admin/Listblog' className={({isActive}) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-64 cursor-pointer dark:text-gray-300 ${isActive && "bg-primary/10 border-r-4 border-primary"}`}>
-        <img src={assets.list_icon} alt="" className='min-w-4 w-5'/>
-        <p className='hidden md:inline-block'>List Blogs</p>
-      </NavLink>
-
-      <NavLink  to='/admin/comments' className={({isActive}) => `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-64 cursor-pointer dark:text-gray-300 ${isActive && "bg-primary/10 border-r-4 border-primary"}`}>
-        <img src={assets.comment_icon} alt="" className='min-w-4 w-5'/>
-        <p className='hidden md:inline-block'>Comments</p>
-      </NavLink>
-
-      <NavLink
-    to="/admin/newsletter"
-    className={({ isActive }) =>
-        `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-64 cursor-pointer dark:text-gray-300 ${
-            isActive && "bg-primary/10 border-r-4 border-primary"
-        }`
-    }>
-    <img
-        src={assets.list_icon}
-        alt=""
-        className="min-w-4 w-5"
-    />
-    <p className="hidden md:inline-block">
-        Newsletter
-    </p>
-</NavLink>
-
-    </div>
-  )
-}
-
-export default Sidebar
+export default Sidebar;

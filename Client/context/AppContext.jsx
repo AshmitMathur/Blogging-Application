@@ -95,26 +95,32 @@ useEffect(() => {
             return;
         }
         try {
-            const payload = JSON.parse(
-                atob(storedToken.split(".")[1])
-            );
-            setToken(storedToken);
-            axios.defaults.headers.common["Authorization"] =
-                storedToken;
-            if (payload.role === "admin") {
-                setIsAdmin(true);
-                setUser(null);
-            }
-            else if (payload.role === "user") {
-                setIsAdmin(false);
-                await fetchCurrentUser();
-                await fetchMyBlogs();
-            }
-            else {
-                setIsAdmin(false);
-                setUser(null);
-            }
-        } catch (error) {
+const payload = JSON.parse(
+    atob(storedToken.split(".")[1])
+);
+
+if (payload.exp && payload.exp * 1000 < Date.now()) {
+    throw new Error("Token expired");
+}
+
+setToken(storedToken);
+
+axios.defaults.headers.common["Authorization"] = storedToken;
+
+if (payload.role === "admin") {
+    setIsAdmin(true);
+    setUser(null);
+}
+else if (payload.role === "user") {
+    setIsAdmin(false);
+    await fetchCurrentUser();
+    await fetchMyBlogs();
+}
+else {
+    setIsAdmin(false);
+    setUser(null);
+    }
+}catch (error) {
             console.log("Invalid token:", error);
             localStorage.removeItem("token");
             delete axios.defaults.headers.common["Authorization"];

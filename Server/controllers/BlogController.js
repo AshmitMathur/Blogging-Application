@@ -237,7 +237,11 @@ export const updateBlog = async (req, res) => {
             });
         }
 
-        if (blog.author && blog.author.toString() !== req.userId) {
+if (
+    req.role !== "admin" &&
+    blog.author &&
+    blog.author.toString() !== req.userId
+) {
     return res.json({
         success: false,
         message: "You are not authorized to edit this blog",

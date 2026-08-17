@@ -1,83 +1,116 @@
-import React, { useState } from 'react'
-import { useAppContext } from '../../../context/AppContext'
+import React, { useState } from 'react';
+import { useAppContext } from '../../../context/AppContext';
 import toast from 'react-hot-toast';
 import { useTheme } from '../../../context/ThemeContext';
 import { assets } from '../../Assets/assets';
 
 const Login = () => {
-  const {axios, setToken, setIsAdmin, navigate} = useAppContext();
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('');
-    const {theme, toggleTheme} = useTheme();
+    const { axios, setToken, setIsAdmin, navigate } = useAppContext();
+    const { theme, toggleTheme } = useTheme();
 
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         try {
-          const {data} = await axios.post('/api/admin/Login', {email, password});
-          if(data.success){
-            setToken(data.token);
-            setIsAdmin(true);
-            localStorage.setItem('token', data.token);
-            axios.defaults.headers.common['Authorization'] = data.token;
-          }
-          else{
-            toast.error(data.message);
-          }
+            const { data } = await axios.post('/api/admin/Login', {
+                email,
+                password
+            });
+
+            if (data.success) {
+                setToken(data.token);
+                setIsAdmin(true);
+                localStorage.setItem('token', data.token);
+                axios.defaults.headers.common['Authorization'] = data.token;
+            } else {
+                toast.error(data.message);
+            }
         } catch (error) {
-          toast.error(error.message);
+            toast.error(error.message);
         }
-    }
-  return (
-    <div className='flex items-center justify-center h-screen'>
+    };
+
+    return (
+        <div className='relative flex items-center justify-center min-h-screen px-4 bg-blue-50/50 dark:bg-gray-950'>
             <img
-    onClick={() => navigate('/')}
-    src={assets.logo}
-    alt="logo"
-    className="absolute top-5 left-5 cursor-pointer text-xl w-32 sm:w-44  dark:invert"
-/>
+                onClick={() => navigate('/')}
+                src={assets.logo}
+                alt='Logo'
+                className='absolute top-5 left-5 w-32 sm:w-40 cursor-pointer dark:invert'
+            />
 
-      <button
-    onClick={toggleTheme}
-    className="absolute top-5 right-5 cursor-pointer text-xl
-                        flex items-center justify-center
-                        rounded-full
-                        text-lg
-                        bg-gray-100
-                        dark:bg-gray-800
-                        hover:bg-gray-200
-                        dark:hover:bg-gray-700
-                        cursor-pointer
-                        transition-all duration-200
-                        hover:scale-105"
->
-    {theme === "light" ? "🌙" : "☀️"}
-</button>
+            <button
+                onClick={toggleTheme}
+                title='Toggle theme'
+                className='absolute top-5 right-5 flex items-center justify-center w-9 h-9 rounded-full bg-white dark:bg-gray-800 shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-all duration-200 hover:scale-105'
+            >
+                {theme === 'light' ? '🌙' : '☀️'}
+            </button>
 
-      <div className='w-full max-w-sm p-6 max-md:m-6 border border-primary/30 shadow-xl shadow-primary/15 rounded-lg'>
-        <div className='flex flex-col items-center justify-center'>
-            <div className='w-full py-6 text-center'>
-                <h1 className='text-3xl font-bold dark:text-gray-200'><span className='text-primary'>Admin</span> Login</h1>
-                <p className='font-light dark:text-gray-200'>Enter Credientials</p>
+            <div className='w-full max-w-md p-6 sm:p-8 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-lg'>
+                <div className='mb-8 text-center'>
+                    <h1 className='text-3xl font-bold text-gray-800 dark:text-gray-100'>
+                        <span className='text-primary'>Admin</span> Login
+                    </h1>
+
+                    <p className='mt-2 text-sm text-gray-500 dark:text-gray-400'>
+                        Sign in to manage your blog
+                    </p>
+                </div>
+
+                <form
+                    onSubmit={handleSubmit}
+                    className='w-full'
+                >
+                    <div className='mb-5'>
+                        <label
+                            htmlFor='email'
+                            className='block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200'
+                        >
+                            Email
+                        </label>
+
+                        <input
+                            id='email'
+                            onChange={(e) => setEmail(e.target.value)}
+                            value={email}
+                            type='email'
+                            required
+                            placeholder='Enter your email'
+                            className='w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition'
+                        />
+                    </div>
+                    <div className='mb-6'>
+                        <label
+                            htmlFor='password'
+                            className='block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200'
+                        >
+                            Password
+                        </label>
+                        <input
+                            id='password'
+                            onChange={(e) => setPassword(e.target.value)}
+                            value={password}
+                            type='password'
+                            required
+                            placeholder='Enter your password'
+                            className='w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition'
+                        />
+                    </div>
+
+                    <button
+                        type='submit'
+                        className='w-full py-2.5 font-medium text-white bg-primary rounded-lg cursor-pointer hover:opacity-90 hover:shadow-md transition-all duration-200'
+                    >
+                        Login
+                    </button>
+                </form>
             </div>
-            <form onSubmit={handleSubmit} className='mt-6 w-full sm:max-w-md text-gray-600'>
-                <div className='flex flex-col'>
-                    <label className='dark:text-gray-200' htmlFor="">Email</label>
-                    <input onChange={e=> setEmail(e.target.value)} value={email}
-                    type="email" required placeholder='Your Email Id' className='border-b-2 border-gray-300 p-2 outline-none mb-6 dark:text-gray-200' />
-                </div>
-
-                <div className='flex flex-col '>
-                    <label className='dark:text-gray-200' htmlFor="">Password</label>
-                    <input onChange={e=> setPassword(e.target.value)} value={password}
-                     type="password" required placeholder='Your Password' className='border-b-2 border-gray-300 p-2 outline-none mb-6 dark:text-gray-200'/>
-                </div>
-                <button type='submit' className='w-full py-3 font-medium bg-primary text-white rounded cursor-pointer hover:bg-primary/90 transition-all'> Login </button>
-            </form>
         </div>
-      </div>
-    </div>
-  )
-}
+    );
+};
 
-export default Login
+export default Login;
