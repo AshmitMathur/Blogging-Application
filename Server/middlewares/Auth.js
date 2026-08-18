@@ -13,12 +13,12 @@ const auth = (req, res, next) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        if (decoded.role !== "admin") {
-            return res.json({
-                success: false,
-                message: "Access denied. Admin only."
-            });
-        }
+if (decoded.role !== "admin" || !decoded.email) {
+    return res.status(403).json({
+        success: false,
+        message: "Access denied. Admin only."
+    });
+}
 
         req.adminEmail = decoded.email;
 

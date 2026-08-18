@@ -13,8 +13,8 @@ const userAuth = async(req, res, next) => {
 
 const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-if (decoded.role !== "user") {
-    return res.json({
+if (decoded.role !== "user" || !decoded.id) {
+    return res.status(403).json({
         success: false,
         message: "Unauthorized"
     });

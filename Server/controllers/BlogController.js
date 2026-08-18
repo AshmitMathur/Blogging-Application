@@ -105,7 +105,9 @@ if (!blog) {
     });
 }
 
-if ( req.role !== "admin" && blog.author && blog.author.toString() !== req.userId
+if (
+    req.role !== "admin" &&
+    (!blog.author || blog.author.toString() !== req.userId)
 ) {
     return res.json({
         success: false,
@@ -239,8 +241,7 @@ export const updateBlog = async (req, res) => {
 
 if (
     req.role !== "admin" &&
-    blog.author &&
-    blog.author.toString() !== req.userId
+    (!blog.author || blog.author.toString() !== req.userId)
 ) {
     return res.json({
         success: false,

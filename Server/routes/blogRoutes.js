@@ -15,7 +15,7 @@ blogRouter.post("/like/:blogId", userAuth, toggleLike);
 blogRouter.get("/like/:blogId", OptAuth, getLikeInfo);
 blogRouter.get("/all", getAllBlogs);
 blogRouter.get("/my-blogs", userAuth, getMyBlogs);
-blogRouter.get("/:blogId", getBlogById);
+blogRouter.get("/:blogId", OptAuth,  getBlogById);
 blogRouter.post("/delete", anyAuth, deleteBlogById);
 blogRouter.post("/toggle-publish", auth, togglePublish);
 blogRouter.post("/add-comment", OptAuth, addComment);
