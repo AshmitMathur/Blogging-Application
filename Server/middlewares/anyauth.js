@@ -16,13 +16,24 @@ const anyAuth = (req, res, next) => {
             process.env.JWT_SECRET
         );
 
-        if (
-            !decoded.role ||
-            !["user", "admin"].includes(decoded.role)
-        ) {
+        if (!["user", "admin"].includes(decoded.role)) {
             return res.status(403).json({
                 success: false,
                 message: "Invalid user role"
+            });
+        }
+
+        if (decoded.role === "user" && !decoded.id) {
+            return res.status(403).json({
+                success: false,
+                message: "Invalid user token"
+            });
+        }
+
+        if (decoded.role === "admin" && !decoded.email) {
+            return res.status(403).json({
+                success: false,
+                message: "Invalid admin token"
             });
         }
 

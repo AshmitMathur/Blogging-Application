@@ -8,9 +8,16 @@ export const toggleLike = async (req, res) => {
         const blog = await Blog.findById(blogId);
 
         if (!blog) {
-            return res.json({
+            return res.status(404).json({
                 success: false,
                 message: "Blog not found",
+            });
+        }
+
+        if (!blog.isPublished) {
+            return res.status(403).json({
+                success: false,
+                message: "You cannot like an unpublished blog",
             });
         }
 
@@ -52,16 +59,32 @@ export const toggleLike = async (req, res) => {
 
 export const getLikeInfo = async (req, res) => {
     try {
-        const { blogId } = req.params;
+const { blogId } = req.params;
 
-        const likeCount = await Like.countDocuments({
-            blog: blogId,
-        });
+const blog = await Blog.findById(blogId);
 
-        const userLiked = await Like.exists({
-            blog: blogId,
-            user: req.userId,
-        });
+if (!blog) {
+    return res.status(404).json({
+        success: false,
+        message: "Blog not found",
+    });
+}
+
+if (!blog.isPublished) {
+    return res.status(403).json({
+        success: false,
+        message: "Like information is not available for unpublished blogs",
+    });
+}
+
+const likeCount = await Like.countDocuments({
+    blog: blogId,
+});
+
+const userLiked = await Like.exists({
+    blog: blogId,
+    user: req.userId,
+});
 
         res.json({
             success: true,

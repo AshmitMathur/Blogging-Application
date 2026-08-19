@@ -3,29 +3,40 @@ import Blog from "../models/Blog.js";
 
 export const updateProfile = async (req, res) => {
     try {
-
         const { name, bio, avatar } = req.body;
 
         const user = await User.findByIdAndUpdate(
             req.userId,
             {
-                name, bio, avatar
+                name,
+                bio,
+                avatar
             },
-            { returnDocument:"after" }
-        );
+            {
+                new: true,
+                runValidators: true
+            }
+        ).select("-password");
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
 
         res.json({
             success: true,
             user
         });
 
-    } catch(error) {
-        res.json({
-            success:false,
-            message:error.message
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
         });
     }
-}
+};
 
 export const getUserProfile = async (req, res) => {
     try {

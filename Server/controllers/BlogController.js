@@ -32,8 +32,6 @@ export const addBlog = async (req, res)=>{
             ]
         });
 
-        const image = optimizedImageUrl;
-
  const blogData = { title, subTitle, description, category, image: optimizedImageUrl, isPublished
         };
         if (req.role === "user") {
@@ -77,21 +75,46 @@ export const getAllBlogs = async(req, res)=> {
     }
 }
 
-export const getBlogById = async(req, res) =>{
+export const getBlogById = async(req, res) => {
     try {
-        const {blogId} = req.params;
-        const blog = await Blog.findById(blogId)
-        .populate("author", "name username avatar");
+        const { blogId } = req.params;
 
-        if(!blog){
-            return res.json({success: false, message: "Blog Not Found"})
+        const blog = await Blog.findById(blogId)
+            .populate("author", "name username avatar");
+
+        if (!blog) {
+            return res.json({
+                success: false,
+                message: "Blog Not Found"
+            });
         }
-        res.json({success: true, blog})
+
+    const isOwner =
+    req.role === "user" &&
+    blog.author &&
+    blog.author._id.toString() === req.userId;
+
+        const isAdmin = req.role === "admin";
+
+        if (!blog.isPublished && !isOwner && !isAdmin) {
+            return res.status(403).json({
+                success: false,
+                message: "You are not authorized to view this blog"
+            });
+        }
+
+        res.json({
+            success: true,
+            blog
+        });
 
     } catch (error) {
-        res.json({success: false, message: error.message});
+        res.json({
+            success: false,
+            message: error.message
+        });
     }
-}
+};
 
 export const deleteBlogById = async(req, res) =>{
     try {
@@ -147,14 +170,32 @@ export const togglePublish = async(req, res) => {
 
 export const addComment = async (req, res) => {
     try {
-        const { blogId, name, content } = req.body;
-        if (!blogId || !content) {
-            return res.json({
-                success: false,
-                message: "Comment content is required"
-            });
-        }
-        let commentName = name;
+const { blogId, name, content } = req.body;
+
+if (!blogId || !content) {
+    return res.status(400).json({
+        success: false,
+        message: "Comment content is required"
+    });
+}
+
+const blog = await Blog.findById(blogId);
+
+if (!blog) {
+    return res.status(404).json({
+        success: false,
+        message: "Blog not found"
+    });
+}
+
+if (!blog.isPublished) {
+    return res.status(403).json({
+        success: false,
+        message: "Comments are not allowed on unpublished blogs"
+    });
+}
+
+let commentName = name;
         let userId = null;
         if (req.role === "user" && req.userId) {
             const user = await User.findById(req.userId);
@@ -198,28 +239,87 @@ export const addComment = async (req, res) => {
     }
 };
 
-export const getBlogComments = async(req, res) =>{
+export const getBlogComments = async (req, res) => {
     try {
-         const {blogId} = req.body;
-        const comments = await Comment.find({blog: blogId, isApproved: true}).sort({createdAt: -1});
-        res.json({
-    success: true,
-    comments: comments
-});
-    } catch (error) {
-        res.json({success: false, message: error.message})
-    }
-}
+        const { blogId } = req.body;
 
-export const generateContent = async(req, res) => {
-    try {
-        const {prompt} = req.body;
-        const content = await main(prompt + " Generate a blog content for this topic in simple text format")
-        res.json({success: true, content});
+        if (!blogId) {
+            return res.status(400).json({
+                success: false,
+                message: "Blog ID is required"
+            });
+        }
+
+        const blog = await Blog.findById(blogId);
+
+        if (!blog) {
+            return res.status(404).json({
+                success: false,
+                message: "Blog not found"
+            });
+        }
+
+        if (!blog.isPublished) {
+            return res.status(403).json({
+                success: false,
+                message: "Comments are not available for unpublished blogs"
+            });
+        }
+
+        const comments = await Comment.find({
+            blog: blogId,
+            isApproved: true
+        }).sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            comments
+        });
+
     } catch (error) {
-        res.json({success: false, message: error.message});
+        res.json({
+            success: false,
+            message: error.message
+        });
     }
-}
+};
+
+export const generateContent = async (req, res) => {
+    try {
+        const { prompt } = req.body;
+
+        if (!prompt || !prompt.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: "Prompt is required"
+            });
+        }
+
+        const content = await main(
+            prompt + " Generate a blog content for this topic in simple text format"
+        );
+
+        res.json({
+            success: true,
+            content
+        });
+
+    } catch (error) {
+        console.error("Gemini Error:", error);
+
+        if (error.status === 503 || error.code === 503) {
+            return res.status(503).json({
+                success: false,
+                message: "Gemini is temporarily unavailable. Please try again in a few moments."
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to generate content"
+        });
+    }
+};
 
 export const updateBlog = async (req, res) => {
     try {
