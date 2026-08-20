@@ -9,8 +9,8 @@ const userSchema = new mongoose.Schema(
 
         username: {
             type: String,
-            required: true,
             unique: true,
+            sparse: true,
         },
 
         email: {
@@ -21,7 +21,13 @@ const userSchema = new mongoose.Schema(
 
         password: {
             type: String,
-            required: true,
+            default: null,
+        },
+
+        googleId: {
+            type: String,
+            unique: true,
+            sparse: true,
         },
 
         avatar: {

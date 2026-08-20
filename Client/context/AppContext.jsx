@@ -18,7 +18,21 @@ export const AppProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [myBlogs, setmyBlogs] = useState([]);
     const [isAdmin, setIsAdmin] = useState(false);
-    const [authLoading, setAuthLoading] = useState(true);
+const [authLoading, setAuthLoading] = useState(true);
+
+const setAuthToken = (newToken) => {
+    if (newToken) {
+        localStorage.setItem("token", newToken);
+        axios.defaults.headers.common["Authorization"] = newToken;
+        setToken(newToken);
+    } else {
+        localStorage.removeItem("token");
+        delete axios.defaults.headers.common["Authorization"];
+        setToken(null);
+    }
+};
+
+    
     
     const removeBlog = (blogId) => {
         setBlogs((prev) => prev.filter((blog) => blog._id !== blogId));
@@ -26,11 +40,7 @@ export const AppProvider = ({children}) => {
     }
 
 const logout = () => {
-
-    localStorage.removeItem("token");
-    delete axios.defaults.headers.common["Authorization"];
-
-    setToken(null);
+    setAuthToken(null);
     setUser(null);
     setIsAdmin(false);
     setmyBlogs([]);
@@ -78,7 +88,7 @@ const logout = () => {
     const value = {
         axios, navigate, token, setToken, blogs, setBlogs, input, setInput, 
         user, setUser, fetchCurrentUser, myBlogs, setmyBlogs, fetchMyBlogs, 
-        removeBlog, isAdmin, setIsAdmin, logout, fetchBlogs, authLoading
+        removeBlog, isAdmin, setIsAdmin, logout, fetchBlogs, authLoading, setAuthToken
     };
 
 useEffect(() => {

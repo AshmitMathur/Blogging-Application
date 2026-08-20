@@ -74,16 +74,7 @@ const UserLogin = () => {
             <button
     onClick={toggleTheme}
     className="absolute top-5 right-5 cursor-pointer text-xl
-     flex items-center justify-center
-                        rounded-full
-                        text-lg
-                        bg-gray-100
-                        dark:bg-gray-800
-                        hover:bg-gray-200
-                        dark:hover:bg-gray-700
-                        cursor-pointer
-                        transition-all duration-200
-                        hover:scale-105"
+     flex items-center justify-center rounded-full text-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition-all duration-200 hover:scale-105"
 >
     {theme === "light" ? "🌙" : "☀️"}
 </button>
@@ -135,6 +126,31 @@ const UserLogin = () => {
                     >
                         Login
                     </button>
+                    <div className="flex items-center gap-3 my-5">
+    <div className="flex-1 h-px bg-gray-300 dark:bg-gray-700"></div>
+
+    <span className="text-sm text-gray-500 dark:text-gray-400">
+        OR
+    </span>
+
+    <div className="flex-1 h-px bg-gray-300 dark:bg-gray-700"></div>
+</div>
+
+<button
+    type="button"
+    onClick={() => {
+        window.location.href = `${import.meta.env.VITE_BASE_URL}/api/auth/google`;
+    }}
+    className="w-full py-3 border border-gray-300 dark:border-gray-700
+               bg-white dark:bg-gray-800
+               text-gray-700 dark:text-gray-200
+               rounded-lg cursor-pointer
+               hover:bg-gray-50 dark:hover:bg-gray-700
+               transition flex items-center justify-center gap-3"
+>
+    <span className="text-lg">G</span>
+    Continue with Google
+</button>
 
                 </form>
 
