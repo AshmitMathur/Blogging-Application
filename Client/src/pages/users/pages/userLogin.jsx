@@ -5,14 +5,14 @@ import { useTheme } from "../../../../context/ThemeContext";
 import { assets } from "../../../Assets/assets";
 
 const UserLogin = () => {
-    const {
-        axios,
-        navigate,
-        setToken,
-        setUser,
-        fetchCurrentUser,
-        fetchMyBlogs
-    } = useAppContext();
+const {
+    axios, 
+    navigate, 
+    setAuthToken, 
+    setUser, 
+    fetchCurrentUser, 
+    fetchMyBlogs 
+} = useAppContext();
 
     const {theme, toggleTheme} = useTheme();
 
@@ -40,13 +40,8 @@ const UserLogin = () => {
             if (data.success) {
                 toast.success(data.message);
 
-                localStorage.setItem("token", data.token);
-
-                setToken(data.token);
-                setUser(data.user);
-
-                axios.defaults.headers.common["Authorization"] =
-                    data.token;
+    setAuthToken(data.token);
+    setUser(data.user);
 
                 await fetchCurrentUser();
                 await fetchMyBlogs();

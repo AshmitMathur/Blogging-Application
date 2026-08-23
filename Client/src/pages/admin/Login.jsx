@@ -5,7 +5,7 @@ import { useTheme } from '../../../context/ThemeContext';
 import { assets } from '../../Assets/assets';
 
 const Login = () => {
-    const { axios, setToken, setIsAdmin, navigate } = useAppContext();
+    const { axios, setAuthToken, setIsAdmin, navigate } = useAppContext();
     const { theme, toggleTheme } = useTheme();
 
     const [email, setEmail] = useState('');
@@ -21,10 +21,8 @@ const Login = () => {
             });
 
             if (data.success) {
-                setToken(data.token);
-                setIsAdmin(true);
-                localStorage.setItem('token', data.token);
-                axios.defaults.headers.common['Authorization'] = data.token;
+    setAuthToken(data.token);
+    setIsAdmin(true);
             } else {
                 toast.error(data.message);
             }
