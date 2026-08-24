@@ -31,6 +31,16 @@ const {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const passwordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    if (!passwordRegex.test(formData.password)) {
+        toast.error(
+            "Password must be at least 8 characters and contain uppercase, lowercase, number, and special character"
+        );
+        return;
+    }
+
         try {
             setLoading(true);
             const { data } = await axios.post(
@@ -68,16 +78,7 @@ const {
     <button
     onClick={toggleTheme}
     className="absolute top-5 right-5 cursor-pointer text-xl                             
-    flex items-center justify-center
-                        rounded-full
-                        text-lg
-                        bg-gray-100
-                        dark:bg-gray-800
-                        hover:bg-gray-200
-                        dark:hover:bg-gray-700
-                        cursor-pointer
-                        transition-all duration-200
-                        hover:scale-105"
+    flex items-center justify-center  rounded-full  text-lg  bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer transition-all duration-200 hover:scale-105"
 >
     {theme === "light" ? "🌙" : "☀️"}
 </button>
@@ -154,13 +155,16 @@ const {
                             type="password"
                             placeholder="Create a password"
                             value={formData.password}
-                            required
+                            required minLength={8}
                             onChange={handleChange}
                             className="border border-gray-300 dark:border-gray-700
                             dark:bg-gray-800 dark:text-gray-200
                             rounded-lg px-4 py-2.5 outline-none
                             focus:border-primary"
                         />
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+    At least 8 characters with uppercase, lowercase, number, and special character.
+                        </p>
                     </div>
                     {/* Register Button */}
                     <button

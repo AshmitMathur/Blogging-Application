@@ -244,16 +244,31 @@ export const dashboard_data = {
 }
 
 export const footer_data = [
-      {
-          title: "Quick Links",
-          links: ["Home", "Best Sellers", "Offers & Deals", "Contact Us", "FAQs"]
-      },
-      {
-          title: "Need Help?",
-          links: ["Delivery Information", "Return & Refund Policy", "Payment Methods", "Track your Order", "Contact Us"]
-      },
-      {
-          title: "Follow Us",
-          links: ["Instagram", "Twitter", "Facebook", "YouTube"]
-      }
-  ];
+    {
+        title: "Explore",
+        links: ["Home", "Latest Blogs", "Write a Blog", "My Blogs"]
+    },
+    {
+        title: "Resources",
+        links: ["About Us", "Contact Us", "FAQs", "Privacy Policy"]
+    },
+    {
+        title: "Community",
+        links: ["Instagram", "Twitter", "Facebook", "YouTube"]
+    }
+];
+
+// export const footer_data = [
+//       {
+//           title: "Quick Links",
+//           links: ["Home", "Best Sellers", "Offers & Deals", "Contact Us", "FAQs"]
+//       },
+//       {
+//           title: "Need Help?",
+//           links: ["Delivery Information", "Return & Refund Policy", "Payment Methods", "Track your Order", "Contact Us"]
+//       },
+//       {
+//           title: "Follow Us",
+//           links: ["Instagram", "Twitter", "Facebook", "YouTube"]
+//       }
+//   ];
