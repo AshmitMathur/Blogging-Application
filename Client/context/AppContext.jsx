@@ -66,9 +66,15 @@ const logout = () => {
             else{
                 setUser(null);
             }
-        } catch (error) {
-            setUser(null);
-        }
+        }catch (error) {
+        setUser(null);
+
+    if (error.response?.status === 401) {
+        setAuthToken(null);
+        setIsAdmin(false);
+        setmyBlogs([]);
+    }
+}
     }
 
     const fetchMyBlogs = async() => {
@@ -86,7 +92,7 @@ const logout = () => {
     }
 
     const value = {
-        axios, navigate, token, setToken, blogs, setBlogs, input, setInput, 
+        axios, navigate, token, blogs, setBlogs, input, setInput, 
         user, setUser, fetchCurrentUser, myBlogs, setmyBlogs, fetchMyBlogs, 
         removeBlog, isAdmin, setIsAdmin, logout, fetchBlogs, authLoading, setAuthToken
     };
@@ -95,15 +101,13 @@ useEffect(() => {
     const initializeApp = async () => {
         fetchBlogs();
         const storedToken = localStorage.getItem("token");
-        if (!storedToken) {
-            setToken(null);
-            setUser(null);
-            setIsAdmin(false);
-            delete axios.defaults.headers.common["Authorization"];
-
-            setAuthLoading(false);
-            return;
-        }
+if (!storedToken) {
+    setAuthToken(null);
+    setUser(null);
+    setIsAdmin(false);
+    setAuthLoading(false);
+    return;
+}
         try {
 const payload = JSON.parse(
     atob(storedToken.split(".")[1])
@@ -113,9 +117,7 @@ if (payload.exp && payload.exp * 1000 < Date.now()) {
     throw new Error("Token expired");
 }
 
-setToken(storedToken);
-
-axios.defaults.headers.common["Authorization"] = storedToken;
+setAuthToken(storedToken);
 
 if (payload.role === "admin") {
     setIsAdmin(true);
@@ -129,16 +131,16 @@ else if (payload.role === "user") {
 else {
     setIsAdmin(false);
     setUser(null);
+     throw new Error("Invalid token role");
     }
 }catch (error) {
-            console.log("Invalid token:", error);
-            localStorage.removeItem("token");
-            delete axios.defaults.headers.common["Authorization"];
-            setToken(null);
-            setUser(null);
-            setIsAdmin(false);
-            setmyBlogs([]);
-        }
+    console.log("Invalid token:", error);
+
+    setAuthToken(null);
+    setUser(null);
+    setIsAdmin(false);
+    setmyBlogs([]);
+}
 
         setAuthLoading(false);
     };
