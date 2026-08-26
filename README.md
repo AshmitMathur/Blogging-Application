@@ -16,8 +16,9 @@ A full-stack blogging platform built with the **MERN Stack** (MongoDB, Express, 
 - Responsive UI with dark mode support
 
 ### User (Author) Features
-- Register and log in with email/password, or sign in with **Google OAuth**
-- JWT-based authentication
+- Register and log in with email/password, with password-strength validation
+- Sign in with **Google OAuth 2.0**
+- JWT-based authentication with role-based authorization
 - Public author profile pages (`/profile/:username`) with editable bio and avatar
 - Write, edit, and publish/unpublish personal blog posts
 - Rich text editing with **Quill**, plus Markdown rendering support
@@ -25,6 +26,16 @@ A full-stack blogging platform built with the **MERN Stack** (MongoDB, Express, 
 - Like blog posts
 - Comment on blog posts (subject to admin approval)
 - "My Blogs" dashboard to manage personal posts
+
+### 🔐 Authentication & Security
+- JWT-based authentication with 7-day token expiration
+- Passwords securely hashed using **bcryptjs**
+- Password-strength validation during registration
+- Separate user and admin authentication flows
+- Role-based authorization for users and admins
+- Protected backend routes using JWT middleware
+- Automatic invalid/expired token cleanup on the client
+- Google OAuth 2.0 authentication
 
 ### Admin Features
 - Secure admin login, separate from user accounts
@@ -202,7 +213,10 @@ Screenshots will be added soon.
 
 ### Completed
 - User registration/login + Google OAuth
-- JWT-based authentication
+- JWT-based authentication with 7-day token expiration
+- Password-strength validation
+- Role-based user/admin authorization
+- Automatic JWT expiration and invalid-token handling
 - User profile pages
 - User-authored blog creation, editing, and publishing
 - Admin dashboard and blog management
@@ -220,7 +234,6 @@ Screenshots will be added soon.
 ### In Progress
 - AI blog generation refinements
 - Better error handling and loading states
-- Form validation improvements
 - UI refinements
 
 ---
@@ -234,6 +247,7 @@ Screenshots will be added soon.
 - Unit and integration testing
 - Docker support
 - CI/CD pipeline
+- Improved password recovery / reset flow
 
 ---
 
