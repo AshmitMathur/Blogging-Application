@@ -23,6 +23,7 @@ const Blog = () => {
 
   const [likeCount, setLikeCount] = useState(0);
   const [liked, setLiked] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
 
 const fetchBlogData = async () => {
     try {
@@ -70,6 +71,25 @@ const fetchLikeData = async () => {
     }
 };
 
+const fetchBookmarkStatus = async () => {
+    if (!user) {
+        setBookmarked(false);
+        return;
+    }
+
+    try {
+        const { data } = await axios.get(`/api/bookmark/status/${id}`);
+
+        if (data.success) {
+            setBookmarked(data.bookmarked);
+        } else {
+            toast.error(data.message);
+        }
+    } catch (error) {
+        toast.error(error.response?.data?.message || error.message);
+    }
+};
+
 const handleLike = async () => {
     if (!user) {
         toast.error("Please login to like this blog");
@@ -91,6 +111,29 @@ const handleLike = async () => {
     } catch (error) {
         toast.error(
             error.response?.data?.message || "Please login to like this blog"
+        );
+    }
+};
+
+const handleBookmark = async () => {
+    if (!user) {
+        toast.error("Please login to bookmark this blog");
+        return;
+    }
+
+    try {
+        const { data } = await axios.post(`/api/bookmark/${id}`);
+
+        if (data.success) {
+            setBookmarked(data.bookmarked);
+            toast.success(data.message);
+        } else {
+            toast.error(data.message);
+        }
+    } catch (error) {
+        toast.error(
+            error.response?.data?.message ||
+            "Please login to bookmark this blog"
         );
     }
 };
@@ -120,10 +163,11 @@ useEffect(() => {
         await fetchBlogData();
         await fetchComments();
         await fetchLikeData();
+        await fetchBookmarkStatus();
     };
 
     fetchData();
-}, [id]);
+}, [id, user]);
 
   return data ? (
     <div className='relative'>
@@ -220,6 +264,25 @@ useEffect(() => {
 
         <span>
             {liked ? "Liked" : "Like"}
+        </span>
+    </button>
+
+    <button
+        onClick={handleBookmark}
+        className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border transition-all cursor-pointer
+            ${
+                bookmarked
+                    ? "bg-yellow-50 border-yellow-200 text-yellow-600 dark:bg-yellow-950/30 dark:border-yellow-900"
+                    : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-300 dark:hover:bg-gray-800"
+            }
+        `}
+    >
+        <span className="text-xl">
+            🔖
+        </span>
+
+        <span className="font-medium">
+            {bookmarked ? "Saved" : "Bookmark"}
         </span>
     </button>
 

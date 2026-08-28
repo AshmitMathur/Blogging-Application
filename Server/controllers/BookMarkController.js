@@ -1,5 +1,6 @@
 import Bookmark from "../models/Bookmark.js";
 import Blog from "../models/Blog.js";
+import Like from "../models/Like.js";
 
 export const toggleBookmark = async (req, res) => {
     try {
@@ -80,6 +81,8 @@ export const getBookmarkStatus = async (req, res) => {
         });
     }
 };
+
+
 export const getMyBookmarks = async (req, res) => {
     try {
         const bookmarks = await Bookmark.find({
@@ -97,12 +100,31 @@ export const getMyBookmarks = async (req, res) => {
         const validBookmarks = bookmarks.filter(
             (bookmark) => bookmark.blog
         );
+
+        const bookmarksWithLikes = await Promise.all(
+            validBookmarks.map(async (bookmark) => {
+                const likeCount = await Like.countDocuments({
+                    blog: bookmark.blog._id,
+                });
+
+                return {
+                    ...bookmark.toObject(),
+                    blog: {
+                        ...bookmark.blog.toObject(),
+                        likeCount,
+                    },
+                };
+            })
+        );
+
         res.json({
             success: true,
-            bookmarks: validBookmarks,
+            bookmarks: bookmarksWithLikes,
         });
+
     } catch (error) {
         console.log("Get My Bookmarks Error:", error);
+
         res.json({
             success: false,
             message: error.message,

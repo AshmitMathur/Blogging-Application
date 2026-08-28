@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import Blog from "../models/Blog.js";
+import Like from "../models/Like.js";
 
 export const updateProfile = async (req, res) => {
     try {
@@ -51,17 +52,30 @@ export const getUserProfile = async (req, res) => {
             });
         }
 
-const blogs = await Blog.find({
-    author: user._id,
-    isPublished: true,
-})
-.populate("author", "name username avatar")
-.sort({ createdAt: -1 });
+        const blogs = await Blog.find({
+            author: user._id,
+            isPublished: true,
+        })
+            .populate("author", "name username avatar")
+            .sort({ createdAt: -1 });
+
+        const blogsWithLikes = await Promise.all(
+            blogs.map(async (blog) => {
+                const likeCount = await Like.countDocuments({
+                    blog: blog._id,
+                });
+
+                return {
+                    ...blog.toObject(),
+                    likeCount,
+                };
+            })
+        );
 
         res.json({
             success: true,
             user,
-            blogs,
+            blogs: blogsWithLikes,
         });
 
     } catch (error) {

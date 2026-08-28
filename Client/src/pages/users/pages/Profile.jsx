@@ -19,6 +19,9 @@ const Profile = () => {
 
     const [user, setUser] = useState(null);
     const [blogs, setBlogs] = useState([]);
+    const [likedBlogs, setLikedBlogs] = useState([]);
+    const [bookmarkedBlogs, setBookmarkedBlogs] = useState([]);
+    const [activeTab, setActiveTab] = useState("published");
 
     const fetchProfile = async () => {
         try {
@@ -37,9 +40,53 @@ const Profile = () => {
         }
     };
 
-    useEffect(() => {
-        fetchProfile();
-    }, [username]);
+    const fetchLikedBlogs = async () => {
+    try {
+        const { data } = await axios.get("/api/blog/liked");
+
+        if (data.success) {
+            setLikedBlogs(data.blogs || []);
+        } else {
+            toast.error(data.message);
+        }
+    } catch (error) {
+        toast.error(
+            error.response?.data?.message || error.message
+        );
+    }
+};
+
+const fetchBookmarkedBlogs = async () => {
+    try {
+        const { data } = await axios.get("/api/bookmark/my");
+        if (data.success) {
+            setBookmarkedBlogs(
+                (data.bookmarks || []).map(
+                    (bookmark) => bookmark.blog
+                )
+            );
+        } else {
+            toast.error(data.message);
+        }
+    } catch (error) {
+        toast.error(
+            error.response?.data?.message || error.message
+        );
+    }
+};
+
+useEffect(() => {
+    const loadProfile = async () => {
+        await fetchProfile();
+
+        if (currentUser?.username === username) {
+            await fetchLikedBlogs();
+            await fetchBookmarkedBlogs();
+        }
+    };
+
+    loadProfile();
+}, [username, currentUser]);
 
     if (!user) {
         return <Loader />;
@@ -135,66 +182,187 @@ const Profile = () => {
                     </div>
                 </section>
 
-                {/* Blogs Section */}
-                <section className="max-w-5xl mx-auto px-5 pb-16">
+{/* Blogs Section */}
+<section className="max-w-5xl mx-auto px-5 pb-16">
 
-                    <div className="flex items-center justify-between mb-8">
+    {/* Tabs */}
+    <div className="flex flex-wrap gap-2 mb-8 border-b border-gray-200 dark:border-gray-800">
 
-                        <div>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-                                Published Blogs
-                            </h2>
+        <button
+            onClick={() => setActiveTab("published")}
+            className={`px-5 py-3 font-medium transition cursor-pointer ${
+                activeTab === "published"
+                    ? "text-primary border-b-2 border-primary"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+            }`}
+        >
+            Published Blogs
+        </button>
 
-                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                Articles written by {user.name}
-                            </p>
-                        </div>
+        {isOwnProfile && (
+            <>
+                <button
+                    onClick={() => setActiveTab("liked")}
+                    className={`px-5 py-3 font-medium transition cursor-pointer ${
+                        activeTab === "liked"
+                            ? "text-primary border-b-2 border-primary"
+                            : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    }`}
+                >
+                    Liked Blogs
+                </button>
 
-                    </div>
+                <button
+                    onClick={() => setActiveTab("bookmarked")}
+                    className={`px-5 py-3 font-medium transition cursor-pointer ${
+                        activeTab === "bookmarked"
+                            ? "text-primary border-b-2 border-primary"
+                            : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    }`}
+                >
+                    Bookmarked Blogs
+                </button>
+            </>
+        )}
 
-                    {/* No Blogs */}
-                    {blogs.length === 0 ? (
-                        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl py-16 px-5 text-center">
+    </div>
 
-                            <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
-                                No blogs published yet
-                            </h3>
+    {/* Published Blogs */}
+    {activeTab === "published" && (
+        <>
+            <div className="flex items-center justify-between mb-8">
 
-                            <p className="mt-2 text-gray-500 dark:text-gray-400">
-                                {isOwnProfile
-                                    ? "Start writing your first blog and share your ideas with the world."
-                                    : `${user.name} hasn't published any blogs yet.`}
-                            </p>
+                <div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                        Published Blogs
+                    </h2>
 
-                            {isOwnProfile && (
-                                <button
-                                    onClick={() =>
-                                        navigate("/write")
-                                    }
-                                    className="mt-6 px-5 py-2.5 bg-primary text-white rounded-lg cursor-pointer hover:bg-primary/90 transition"
-                                >
-                                    Write Your First Blog
-                                </button>
-                            )}
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        Articles written by {user.name}
+                    </p>
+                </div>
 
-                        </div>
-                    ) : (
+            </div>
 
-                        /* Blog Grid */
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+            {blogs.length === 0 ? (
+                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl py-16 px-5 text-center">
 
-                            {blogs.map((blog) => (
-                                <BlogCard
-                                    key={blog._id}
-                                    blog={blog}
-                                />
-                            ))}
+                    <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+                        No blogs published yet
+                    </h3>
 
-                        </div>
+                    <p className="mt-2 text-gray-500 dark:text-gray-400">
+                        {isOwnProfile
+                            ? "Start writing your first blog and share your ideas with the world."
+                            : `${user.name} hasn't published any blogs yet.`}
+                    </p>
 
+                    {isOwnProfile && (
+                        <button
+                            onClick={() => navigate("/write")}
+                            className="mt-6 px-5 py-2.5 bg-primary text-white rounded-lg cursor-pointer hover:bg-primary/90 transition"
+                        >
+                            Write Your First Blog
+                        </button>
                     )}
 
-                </section>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+
+                    {blogs.map((blog) => (
+                        <BlogCard
+                            key={blog._id}
+                            blog={blog}
+                        />
+                    ))}
+
+                </div>
+            )}
+        </>
+    )}
+
+    {/* Liked Blogs */}
+    {activeTab === "liked" && isOwnProfile && (
+        <>
+            <div className="mb-8">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                    Liked Blogs
+                </h2>
+
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    Blogs you have liked
+                </p>
+            </div>
+
+            {likedBlogs.length === 0 ? (
+                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl py-16 px-5 text-center">
+
+                    <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+                        No liked blogs yet
+                    </h3>
+
+                    <p className="mt-2 text-gray-500 dark:text-gray-400">
+                        Blogs you like will appear here.
+                    </p>
+
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+
+                    {likedBlogs.map((blog) => (
+                        <BlogCard
+                            key={blog._id}
+                            blog={blog}
+                        />
+                    ))}
+
+                </div>
+            )}
+        </>
+    )}
+
+    {/* Bookmarked Blogs */}
+    {activeTab === "bookmarked" && isOwnProfile && (
+        <>
+            <div className="mb-8">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                    Bookmarked Blogs
+                </h2>
+
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    Blogs you have saved for later
+                </p>
+            </div>
+
+            {bookmarkedBlogs.length === 0 ? (
+                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl py-16 px-5 text-center">
+
+                    <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+                        No bookmarked blogs yet
+                    </h3>
+
+                    <p className="mt-2 text-gray-500 dark:text-gray-400">
+                        Blogs you bookmark will appear here.
+                    </p>
+
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+
+                    {bookmarkedBlogs.map((blog) => (
+                        <BlogCard
+                            key={blog._id}
+                            blog={blog}
+                        />
+                    ))}
+
+                </div>
+            )}
+        </>
+    )}
+
+</section>
 
             </main>
 

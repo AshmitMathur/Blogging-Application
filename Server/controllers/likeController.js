@@ -101,3 +101,51 @@ const userLiked = await Like.exists({
         });
     }
 };
+
+export const getMyLikedBlogs = async (req, res) => {
+    try {
+        const likes = await Like.find({
+            user: req.userId,
+        })
+            .populate({
+                path: "blog",
+                populate: {
+                    path: "author",
+                    select: "name username avatar",
+                },
+            })
+            .sort({ createdAt: -1 });
+
+        const validLikes = likes.filter(
+            (like) => like.blog && like.blog.isPublished
+        );
+
+        const blogsWithLikes = await Promise.all(
+            validLikes.map(async (like) => {
+                const blog = like.blog;
+
+                const likeCount = await Like.countDocuments({
+                    blog: blog._id,
+                });
+
+                return {
+                    ...blog.toObject(),
+                    likeCount,
+                };
+            })
+        );
+
+        res.json({
+            success: true,
+            blogs: blogsWithLikes,
+        });
+
+    } catch (error) {
+        console.error("Get My Liked Blogs Error:", error);
+
+        res.json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
