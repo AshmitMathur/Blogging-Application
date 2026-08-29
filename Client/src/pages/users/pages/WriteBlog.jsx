@@ -62,76 +62,41 @@ const generateContent = async () => {
         setIsGenerating(false);
     }
 };
-
 const handleSubmit = async (e) => {
     e.preventDefault();
-
 const description = quillRef.current?.root.innerHTML || "";
-
 if (
     !title.trim()  || !category.trim() ||
     !description.replace(/<(.|\n)*?>/g, "").trim()
 ) {
     toast.error("Title, description and category are required");
-    return;
-}
-
+    return; }
     if (!image) {
         toast.error("Please select a cover image");
-        return;
-    }
-
+        return; }
     try {
         setLoading(true);
-
         const formData = new FormData();
-
-        formData.append(
-            "blog",
-            JSON.stringify({
-                title,
-                subTitle,
-                description,
-                category,
-                isPublished: true
-            })
-        );
-
+        formData.append( "blog", JSON.stringify({ title, subTitle, description, category, isPublished: true
+            }) );
         formData.append("image", image);
-
         const { data } = await axios.post(
             "/api/blog/add",
-            formData
-        );
-
-        if (data.success) {
-            toast.success(data.message);
-
-            await fetchBlogs();
-
-            setTitle("");
-            setSubTitle("");
-            setCategory("");
-            setImage(null);
-
+            formData );
+        if (data.success) { toast.success(data.message); await fetchBlogs(); setTitle(""); setSubTitle(""); setCategory(""); setImage(null);
             if (quillRef.current) {
     quillRef.current.root.innerHTML = "";
                 }
-
             navigate("/");
         } else {
             toast.error(data.message);
-        }
-
-    } catch (error) {
+        } } catch (error) {
         toast.error(
-            error.response?.data?.message || error.message
-        );
+            error.response?.data?.message || error.message );
     } finally {
         setLoading(false);
     }
 };
-
     return (
         <>
             <Navbar />

@@ -9,83 +9,130 @@ A full-stack blogging platform built with the **MERN Stack** (MongoDB, Express, 
 ## ✨ Features
 
 ### Visitor Features
-- Browse all published blogs
-- Search blogs by title
-- Filter blogs by category
-- View complete blog details, including likes and approved comments
-- Responsive UI with dark mode support
+
+* Browse all published blogs
+* Search blogs by title
+* Filter blogs by category
+* View complete blog details, including likes and approved comments
+* Responsive UI with dark mode support
+* View public author profiles
 
 ### User (Author) Features
-- Register and log in with email/password, with password-strength validation
-- Sign in with **Google OAuth 2.0**
-- JWT-based authentication with role-based authorization
-- Public author profile pages (`/profile/:username`) with editable bio and avatar
-- Write, edit, and publish/unpublish personal blog posts
-- Rich text editing with **Quill**, plus Markdown rendering support
-- Upload blog thumbnails via ImageKit
-- Like blog posts
-- Comment on blog posts (subject to admin approval)
-- "My Blogs" dashboard to manage personal posts
+
+* Register and log in with email/password, with password-strength validation
+* Sign in with **Google OAuth 2.0**
+* JWT-based authentication with role-based authorization
+* Public author profile pages (`/profile/:username`)
+* Edit profile name, bio, and avatar
+* Write, edit, and publish/unpublish personal blog posts
+* Rich text editing with **Quill**, plus Markdown rendering support
+* Upload blog thumbnails via ImageKit
+* Like and unlike blog posts
+* View blogs you have liked
+* Bookmark and unbookmark blog posts
+* View saved/bookmarked blogs
+* Comment on blog posts (subject to admin approval)
+* "My Blogs" dashboard to manage personal posts
 
 ### 🔐 Authentication & Security
-- JWT-based authentication with 7-day token expiration
-- Passwords securely hashed using **bcryptjs**
-- Password-strength validation during registration
-- Separate user and admin authentication flows
-- Role-based authorization for users and admins
-- Protected backend routes using JWT middleware
-- Automatic invalid/expired token cleanup on the client
-- Google OAuth 2.0 authentication
+
+* JWT-based authentication with 7-day token expiration
+* Passwords securely hashed using **bcryptjs**
+* Password-strength validation during registration
+* Separate user and admin authentication flows
+* Role-based authorization for users and admins
+* Protected backend routes using JWT middleware
+* Optional authentication for public blog interactions
+* Automatic invalid/expired token cleanup on the client
+* Google OAuth 2.0 authentication
+
+### 👤 User Profiles
+
+* Public profiles accessible through `/profile/:username`
+* Display user avatar, name, username, bio, and blog statistics
+* Display published blogs written by the user
+* Profile owner can edit their profile
+* Profile owner can access:
+
+  * **Published Blogs**
+  * **Liked Blogs**
+  * **Bookmarked Blogs**
+* Liked and bookmarked content is only accessible from the user's own profile
+
+### 👍 Blog Interactions
+
+* Like and unlike published blogs
+* Display like counts on blog cards
+* Display like status for the current user
+* Bookmark and unbookmark published blogs
+* View all liked blogs from the user profile
+* View all bookmarked blogs from the user profile
+* Like and bookmark data are stored separately from blog documents using dedicated MongoDB models
+
+### 🛡️ Blog Authorization
+
+* Users can edit and delete their own blogs
+* Admins can edit and delete any blog
+* Admins can publish/unpublish blogs
+* User-created blogs are associated with their author
+* Admin-created blogs can exist without a user author
+* Unpublished blogs are restricted to their owner and admins
+* Only published blogs can be liked or bookmarked
 
 ### Admin Features
-- Secure admin login, separate from user accounts
-- Admin dashboard with site-wide stats
-- Create, edit, delete, and publish/unpublish any blog post
-- Rich text editor using Quill
-- Upload and optimize blog thumbnails with ImageKit
-- Approve, moderate, or delete comments
-- View and manage newsletter subscribers
 
-### AI Integration
-- AI-assisted blog content generation using **Google's Gemini API**
-- One-click content generation from within the blog editor
+* Secure admin login, separate from user accounts
+* Admin dashboard with site-wide stats
+* Create, edit, delete, and publish/unpublish any blog post
+* Rich text editor using Quill
+* Upload and optimize blog thumbnails with ImageKit
+* Approve, moderate, or delete comments
+* View and manage newsletter subscribers
 
-### Newsletter
-- Visitors can subscribe to a newsletter
-- Admins can view and remove subscribers from the dashboard
+### 🤖 AI Integration
+
+* AI-assisted blog content generation using **Google's Gemini API**
+* One-click content generation from within the blog editor
+
+### 📧 Newsletter
+
+* Visitors can subscribe to a newsletter
+* Admins can view and remove subscribers from the dashboard
 
 ---
 
 ## 🛠 Tech Stack
 
 ### Frontend
-- React 19
-- Vite
-- React Router DOM
-- Tailwind CSS 4
-- Axios
-- React Hot Toast
-- Quill Editor
-- Marked (Markdown rendering)
-- Moment.js
-- Motion (animations)
+
+* React 19
+* Vite
+* React Router DOM
+* Tailwind CSS 4
+* Axios
+* React Hot Toast
+* Quill Editor
+* Marked (Markdown rendering)
+* Moment.js
+* Motion (animations)
 
 ### Backend
-- Node.js
-- Express 5
-- MongoDB with Mongoose
-- JWT (`jsonwebtoken`) for authentication
-- bcryptjs for password hashing
-- Google Auth Library (Google OAuth login)
-- Multer (file uploads)
-- ImageKit (image hosting/optimization)
-- Google Gemini API (`@google/genai`) for AI content generation
+
+* Node.js
+* Express 5
+* MongoDB with Mongoose
+* JWT (`jsonwebtoken`) for authentication
+* bcryptjs for password hashing
+* Google Auth Library (Google OAuth login)
+* Multer (file uploads)
+* ImageKit (image hosting/optimization)
+* Google Gemini API (`@google/genai`) for AI content generation
 
 ---
 
 ## 📁 Project Structure
 
-```
+```text
 Blogging-Application/
 │
 ├── Client/
@@ -101,10 +148,10 @@ Blogging-Application/
 │
 ├── Server/
 │   ├── configs/            # DB, Gemini, ImageKit, Google OAuth configs
-│   ├── controllers/        # Auth, Blog, User, Like, Newsletter, Admin logic
+│   ├── controllers/        # Auth, Blog, User, Like, Bookmark, Newsletter, Admin logic
 │   ├── middlewares/        # Auth, optional auth, "any auth", Multer
-│   ├── models/             # User, Blog, Comment, Like, Newsletter schemas
-│   ├── routes/             # /api/auth, /api/blog, /api/user, /api/admin, /api/newsletter
+│   ├── models/             # User, Blog, Comment, Like, Bookmark, Newsletter schemas
+│   ├── routes/             # /api/auth, /api/blog, /api/user, /api/bookmark, /api/admin, /api/newsletter
 │   ├── Server.js
 │   └── package.json
 │
@@ -125,12 +172,14 @@ cd Blogging-Application
 ### Install dependencies
 
 **Client**
+
 ```bash
 cd Client
 npm install
 ```
 
 **Server**
+
 ```bash
 cd ../Server
 npm install
@@ -138,7 +187,7 @@ npm install
 
 ---
 
-## Environment Variables
+## 🔑 Environment Variables
 
 ### Server (`Server/.env`)
 
@@ -173,9 +222,10 @@ VITE_BASE_URL=http://localhost:3000
 
 ---
 
-## Running the Project
+## ▶️ Running the Project
 
 ### Start the backend
+
 ```bash
 cd Server
 npm run server   # nodemon, for development
@@ -184,105 +234,144 @@ npm start        # plain node
 ```
 
 ### Start the frontend
+
 ```bash
 cd Client
 npm run dev
 ```
 
----
-
-## API Overview
-
-| Base Route | Purpose |
-|---|---|
-| `/api/auth` | Register, login, Google OAuth, get current user |
-| `/api/user` | Get/update user profile |
-| `/api/blog` | CRUD on blogs, likes, comments, AI content generation |
-| `/api/admin` | Admin login, dashboard, comment moderation, newsletter management |
-| `/api/newsletter` | Newsletter subscription |
+The frontend runs on Vite's development server, while the backend runs on the configured Express port.
 
 ---
 
-## Screenshots
+## 🔌 API Overview
+
+| Base Route        | Purpose                                                                   |
+| ----------------- | ------------------------------------------------------------------------- |
+| `/api/auth`       | Register, login, Google OAuth, get current user                           |
+| `/api/user`       | Get public user profiles and update the authenticated user's profile      |
+| `/api/blog`       | Blog CRUD, likes, comments, AI content generation                         |
+| `/api/bookmark`   | Bookmark/unbookmark blogs and retrieve the authenticated user's bookmarks |
+| `/api/admin`      | Admin login, dashboard, comment moderation, newsletter management         |
+| `/api/newsletter` | Newsletter subscription                                                   |
+
+### Blog Interaction Endpoints
+
+| Method | Endpoint                 | Purpose                                        |
+| ------ | ------------------------ | ---------------------------------------------- |
+| `POST` | `/api/blog/like/:blogId` | Like or unlike a blog                          |
+| `GET`  | `/api/blog/like/:blogId` | Get like count and current user's like status  |
+| `GET`  | `/api/blog/liked`        | Get blogs liked by the authenticated user      |
+| `POST` | `/api/bookmark/:blogId`  | Bookmark or remove a bookmark                  |
+| `GET`  | `/api/bookmark/:blogId`  | Get bookmark status                            |
+| `GET`  | `/api/bookmark/my`       | Get blogs bookmarked by the authenticated user |
+
+---
+
+## 📸 Screenshots
 
 Screenshots will be added soon.
 
 ---
 
-## Current Development Status
+## 📊 Current Development Status
 
-### Completed
-- User registration/login + Google OAuth
-- JWT-based authentication with 7-day token expiration
-- Password-strength validation
-- Role-based user/admin authorization
-- Automatic JWT expiration and invalid-token handling
-- User profile pages
-- User-authored blog creation, editing, and publishing
-- Admin dashboard and blog management
-- Rich text editor (Quill) with Markdown rendering
-- Image uploads with ImageKit
-- Blog likes
-- Comments with admin approval/moderation
-- Newsletter subscription and admin management
-- Blog search and category filtering
-- Responsive design with dark mode
-- AI blog generation with Gemini
-- MongoDB integration
-- Express REST API
+### ✅ Completed
 
-### In Progress
-- AI blog generation refinements
-- Better error handling and loading states
-- UI refinements
+* User registration/login + Google OAuth
+* JWT-based authentication with 7-day token expiration
+* Password-strength validation
+* Role-based user/admin authorization
+* Automatic JWT expiration and invalid-token handling
+* Public user profile pages
+* Profile editing
+* User-authored blog creation, editing, and publishing
+* Admin dashboard and blog management
+* Rich text editor (Quill) with Markdown rendering
+* Image uploads with ImageKit
+* Blog likes and like counts
+* Liked blogs section
+* Blog bookmarks/saved posts
+* Bookmarked blogs section
+* Comments with admin approval/moderation
+* Newsletter subscription and admin management
+* Blog search and category filtering
+* Responsive design with dark mode
+* AI blog generation with Gemini
+* MongoDB integration
+* Express REST API
+* Blog ownership and role-based authorization
 
----
+### 🚧 In Progress
 
-## Future Improvements
-- Bookmarks / saved posts
-- Pagination
-- SEO optimization
-- Reading time estimation
-- Related articles
-- Unit and integration testing
-- Docker support
-- CI/CD pipeline
-- Improved password recovery / reset flow
+* AI blog generation refinements
+* Better error handling and loading states
+* UI refinements
+* Additional testing and edge-case handling
 
 ---
 
-## Learning Outcomes
+## 🔮 Future Improvements
+
+* Pagination
+* SEO optimization
+* Reading time estimation
+* Related articles
+* Unit and integration testing
+* Docker support
+* CI/CD pipeline
+* Improved password recovery / reset flow
+* Additional profile statistics
+* Performance optimization
+
+---
+
+## 📚 Learning Outcomes
 
 This project helped me gain practical experience with:
-- Full-stack MERN development
-- REST API design and JWT authentication
-- OAuth 2.0 integration (Google)
-- MongoDB schema design
-- File uploads using Multer
-- Image optimization using ImageKit
-- React Context API
-- Rich text editing with Quill and Markdown rendering
-- AI integration using the Gemini API
-- CRUD operations
-- Frontend-backend communication
-- State management
-- Responsive UI development
+
+* Full-stack MERN development
+* REST API design
+* JWT authentication and role-based authorization
+* OAuth 2.0 integration with Google
+* MongoDB and Mongoose schema design
+* Relational-style references and population in MongoDB
+* File uploads using Multer
+* Image optimization using ImageKit
+* React Context API
+* React Router
+* Rich text editing with Quill
+* Markdown rendering
+* AI integration using the Gemini API
+* Blog interaction systems such as likes and bookmarks
+* CRUD operations
+* Frontend-backend communication
+* State management
+* Responsive UI development
+* Authentication middleware design
+* Protected and optional-authentication routes
 
 ---
 
-## Known Issues
+## ⚠️ Known Issues
 
-This project is actively being improved. Some features are still under development, and bug fixes and enhancements are being added regularly.
-
----
-
-## Contributing
-
-Contributions, suggestions, and feedback are welcome. Feel free to fork the repository, open an issue, or submit a pull request.
+The project is actively being improved. Minor UI refinements, error-handling improvements, and additional testing are still ongoing.
 
 ---
 
-## Author
+## 🤝 Contributing
+
+Contributions, suggestions, and feedback are welcome.
+
+Feel free to:
+
+* Fork the repository
+* Open an issue
+* Submit a pull request
+
+---
+
+## 👨‍💻 Author
 
 **Ashmit Mathur**
 
@@ -292,6 +381,6 @@ Live Server: [blogging-application-server.vercel.app](https://blogging-applicati
 
 ---
 
-## License
+## 📄 License
 
 This project is intended for learning and portfolio purposes.
