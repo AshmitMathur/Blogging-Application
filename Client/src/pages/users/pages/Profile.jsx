@@ -270,12 +270,19 @@ useEffect(() => {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
 
-                    {blogs.map((blog) => (
-                        <BlogCard
-                            key={blog._id}
-                            blog={blog}
-                        />
-                    ))}
+{blogs.map((blog) => ( 
+    <BlogCard 
+        key={blog._id} 
+        blog={blog}
+        onDelete={(deletedBlogId) => {
+            setBlogs((prevBlogs) =>
+                prevBlogs.filter(
+                    (blog) => blog._id !== deletedBlogId
+                )
+            );
+        }}
+    /> 
+))}
 
                 </div>
             )}

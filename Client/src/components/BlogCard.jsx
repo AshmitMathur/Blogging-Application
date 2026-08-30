@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
 import toast from 'react-hot-toast';
 
-const BlogCard = ({blog}) => {
+const BlogCard = ({blog, onDelete}) => {
     const {title, description, category,image, _id, likeCount} = blog;
     const { user, axios, removeBlog, isAdmin } = useAppContext();
     const navigate = useNavigate();
@@ -56,9 +56,13 @@ const BlogCard = ({blog}) => {
                           );
 
                     if (data.success) {
-                        toast.success(data.message);
-                        removeBlog(blog._id);
-                    } else {
+    toast.success(data.message);
+    removeBlog(blog._id);
+
+    if (onDelete) {
+        onDelete(blog._id);
+    }
+} else {
                         toast.error(data.message);
                     }
                 } catch (error) {
