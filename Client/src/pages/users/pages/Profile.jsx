@@ -22,6 +22,8 @@ const Profile = () => {
     const [likedBlogs, setLikedBlogs] = useState([]);
     const [bookmarkedBlogs, setBookmarkedBlogs] = useState([]);
     const [activeTab, setActiveTab] = useState("published");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
 
     const fetchProfile = async () => {
         try {
@@ -38,6 +40,9 @@ const Profile = () => {
                 error.response?.data?.message || error.message
             );
         }
+         finally {
+        setLoading(false);
+    }
     };
 
     const fetchLikedBlogs = async () => {
@@ -49,11 +54,13 @@ const Profile = () => {
         } else {
             toast.error(data.message);
         }
-    } catch (error) {
-        toast.error(
-            error.response?.data?.message || error.message
-        );
-    }
+} catch (error) {
+    console.error("Fetch Liked Blogs Error:", error);
+
+    toast.error(
+        error.response?.data?.message || "Failed to load liked blogs"
+    );
+}
 };
 
 const fetchBookmarkedBlogs = async () => {
@@ -68,11 +75,13 @@ const fetchBookmarkedBlogs = async () => {
         } else {
             toast.error(data.message);
         }
-    } catch (error) {
-        toast.error(
-            error.response?.data?.message || error.message
-        );
-    }
+} catch (error) {
+    console.error("Fetch Bookmarked Blogs Error:", error);
+
+    toast.error(
+        error.response?.data?.message || "Failed to load bookmarked blogs"
+    );
+}
 };
 
 useEffect(() => {
@@ -88,9 +97,38 @@ useEffect(() => {
     loadProfile();
 }, [username, currentUser]);
 
-    if (!user) {
-        return <Loader />;
-    }
+if (loading) {
+    return <Loader />;
+}
+
+if (error || !user) {
+    return (
+        <>
+            <Navbar />
+
+            <main className="min-h-[70vh] flex items-center justify-center bg-gray-50 dark:bg-black px-5">
+                <div className="text-center">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        Profile Not Found
+                    </h2>
+
+                    <p className="mt-2 text-gray-500 dark:text-gray-400">
+                        The user profile you're looking for does not exist.
+                    </p>
+
+                    <button
+                        onClick={() => navigate("/")}
+                        className="mt-6 px-5 py-2.5 bg-primary text-white rounded-lg cursor-pointer hover:bg-primary/90 transition"
+                    >
+                        Go to Home
+                    </button>
+                </div>
+            </main>
+
+            <Footer />
+        </>
+    );
+}
 
     const isOwnProfile =
         currentUser?.username === user.username;
