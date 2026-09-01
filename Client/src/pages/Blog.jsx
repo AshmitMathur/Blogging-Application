@@ -18,6 +18,12 @@ const Blog = () => {
   const [data, setData] = useState(null);
   const [comments, setComments] = useState([]);
 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [commentLoading, setCommentLoading] = useState(false);
+  const [likeLoading, setLikeLoading] = useState(false);
+  const [bookmarkLoading, setBookmarkLoading] = useState(false);
+
   const [name, setName] = useState('')
   const [content, setContent] = useState('')
 
@@ -27,16 +33,25 @@ const Blog = () => {
 
 const fetchBlogData = async () => {
     try {
-        const response = await axios.get(`/api/blog/${id}`);
+        setLoading(true);
+        setError("");
 
+        const { data } = await axios.get(`/api/blog/${id}`);
 
-        if (response.data.success) {
-            setData(response.data.blog);
+        if (data.success) {
+            setData(data.blog);
         } else {
-            toast.error(response.data.message);
+            setData(null);
+            setError(data.message || "Blog not found");
         }
     } catch (error) {
-        toast.error(error.message);
+        setData(null);
+        setError(
+            error.response?.data?.message ||
+            "Unable to load this blog"
+        );
+    } finally {
+        setLoading(false);
     }
 };
 
@@ -52,9 +67,11 @@ const fetchComments = async () => {
         } else {
             toast.error(data.message);
         }
-    } catch (error) {
-        toast.error(error.message);
-    }
+    }catch (error) {
+    toast.error(
+        error.response?.data?.message || error.message
+    );
+}
 };
 const fetchLikeData = async () => {
     try {
@@ -67,8 +84,10 @@ const fetchLikeData = async () => {
             toast.error(data.message);
         }
     } catch (error) {
-        toast.error(error.message);
-    }
+    toast.error(
+        error.response?.data?.message || error.message
+    );
+}
 };
 
 const fetchBookmarkStatus = async () => {
@@ -97,6 +116,8 @@ const handleLike = async () => {
     }
 
     try {
+        setLikeLoading(true);
+
         const { data } = await axios.post(`/api/blog/like/${id}`);
 
         if (data.success) {
@@ -110,8 +131,10 @@ const handleLike = async () => {
         }
     } catch (error) {
         toast.error(
-            error.response?.data?.message || "Please login to like this blog"
+            error.response?.data?.message || "Unable to update like"
         );
+    } finally {
+        setLikeLoading(false);
     }
 };
 
@@ -122,6 +145,8 @@ const handleBookmark = async () => {
     }
 
     try {
+        setBookmarkLoading(true);
+
         const { data } = await axios.post(`/api/bookmark/${id}`);
 
         if (data.success) {
@@ -133,30 +158,42 @@ const handleBookmark = async () => {
     } catch (error) {
         toast.error(
             error.response?.data?.message ||
-            "Please login to bookmark this blog"
+            "Unable to update bookmark"
         );
+    } finally {
+        setBookmarkLoading(false);
     }
 };
 
-  const addComment = async (e)=> {
+const addComment = async (e) => {
     e.preventDefault();
-    try{
-      const {data} = await axios.post("/api/blog/add-comment", {blogId: id, name,content});
 
-      if(data.success){
-        toast.success(data.message);
-        setName('');
-        setContent('');
+    try {
+        setCommentLoading(true);
 
-        await fetchComments();
-      }
-      else{
-        toast.error(data.message);
-      }
-    }catch(error){
-      toast.error(error.message);
+        const { data } = await axios.post("/api/blog/add-comment", {
+            blogId: id,
+            name,
+            content
+        });
+
+        if (data.success) {
+            toast.success(data.message);
+            setName('');
+            setContent('');
+
+            await fetchComments();
+        } else {
+            toast.error(data.message);
+        }
+    } catch (error) {
+        toast.error(
+            error.response?.data?.message || "Unable to post comment"
+        );
+    } finally {
+        setCommentLoading(false);
     }
-  }
+};
 
 useEffect(() => {
     const fetchData = async () => {
@@ -169,7 +206,45 @@ useEffect(() => {
     fetchData();
 }, [id, user]);
 
-  return data ? (
+if (loading) {
+    return <Loader />;
+}
+
+if (error || !data) {
+    return (
+        <div className="min-h-screen flex flex-col">
+            <Navbar />
+
+            <main className="flex-1 flex items-center justify-center px-5">
+                <div className="text-center max-w-md">
+                    <div className="text-6xl mb-5">
+                        📄
+                    </div>
+
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                        Blog Not Found
+                    </h2>
+
+                    <p className="mt-3 text-gray-500 dark:text-gray-400">
+                        {error ||
+                            "The blog you are looking for does not exist or is no longer available."}
+                    </p>
+
+                    <button
+                        onClick={() => window.history.back()}
+                        className="mt-6 px-5 py-2.5 bg-primary text-white rounded-lg font-medium cursor-pointer hover:bg-primary/90 transition"
+                    >
+                        Go Back
+                    </button>
+                </div>
+            </main>
+
+            <Footer />
+        </div>
+    );
+}
+
+  return (
     <div className='relative'>
       <img src={assets.gradientBackground} alt="" className='absolute -top-50 -z-1 opacity-50' />
       <Navbar/>
@@ -245,7 +320,7 @@ useEffect(() => {
           <div className="max-w-3xl mx-auto mt-8 flex items-center gap-3">
 
     <button
-        onClick={handleLike}
+        onClick={handleLike} disabled={likeLoading}
         className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border transition-all cursor-pointer
             ${
                 liked
@@ -262,13 +337,17 @@ useEffect(() => {
             {likeCount}
         </span>
 
-        <span>
-            {liked ? "Liked" : "Like"}
-        </span>
+<span>
+    {likeLoading
+        ? "Updating..."
+        : liked
+        ? "Liked"
+        : "Like"}
+</span>
     </button>
 
     <button
-        onClick={handleBookmark}
+        onClick={handleBookmark} disabled={bookmarkLoading}
         className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border transition-all cursor-pointer
             ${
                 bookmarked
@@ -281,9 +360,13 @@ useEffect(() => {
             🔖
         </span>
 
-        <span className="font-medium">
-            {bookmarked ? "Saved" : "Bookmark"}
-        </span>
+<span className="font-medium">
+    {bookmarkLoading
+        ? "Updating..."
+        : bookmarked
+        ? "Saved"
+        : "Bookmark"}
+</span>
     </button>
 
 </div>
@@ -407,11 +490,13 @@ useEffect(() => {
             "
         />
         <div className="flex justify-end">
-            <button
-                type="submit"
-                className=" px-6 py-3  rounded-xl  bg-primary text-white font-medium hover:bg-primary/90 hover:shadow-md active:scale-95 transition-all cursor-pointer
-                "> Post Comment
-            </button>
+<button
+    type="submit"
+    disabled={commentLoading}
+    className="px-6 py-3 rounded-xl bg-primary text-white font-medium hover:bg-primary/90 hover:shadow-md active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+>
+    {commentLoading ? "Posting..." : "Post Comment"}
+</button>
         </div>
     </form>
 </div>
@@ -431,9 +516,14 @@ useEffect(() => {
     <div className="flex justify-center gap-3">
 
         <button
-            onClick={() =>
-                navigator.clipboard.writeText(window.location.href)
-            }
+onClick={async () => {
+    try {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success("Link copied!");
+    } catch {
+        toast.error("Unable to copy link");
+    }
+}}
             className="  px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition cursor-pointer
             "
         >
@@ -460,7 +550,7 @@ useEffect(() => {
           </div>
           <Footer/>
     </div>
-  ) : <Loader/>
+  ) 
 }
 
 export default Blog
