@@ -14,8 +14,10 @@ A full-stack blogging platform built with the **MERN Stack** (MongoDB, Express, 
 * Search blogs by title
 * Filter blogs by category
 * View complete blog details, including likes and approved comments
+* Graceful loading and error handling on blog detail pages
 * Responsive UI with dark mode support
 * View public author profiles
+
 
 ### User (Author) Features
 
@@ -64,10 +66,15 @@ A full-stack blogging platform built with the **MERN Stack** (MongoDB, Express, 
 * Like and unlike published blogs
 * Display like counts on blog cards
 * Display like status for the current user
+* Loading states while updating likes
 * Bookmark and unbookmark published blogs
+* Loading states while updating bookmarks
 * View all liked blogs from the user profile
 * View all bookmarked blogs from the user profile
 * Like and bookmark data are stored separately from blog documents using dedicated MongoDB models
+* Loading state while submitting comments
+* Error feedback for failed blog interactions
+
 
 ### 🛡️ Blog Authorization
 
@@ -301,14 +308,15 @@ Screenshots will be added soon.
 * MongoDB integration
 * Express REST API
 * Blog ownership and role-based authorization
+* Blog detail page loading and error handling
+* Loading states for like, bookmark, and comment actions
+* User-friendly error feedback for blog interactions
 
 ### 🚧 In Progress
 
 * AI blog generation refinements
-* Better error handling and loading states
 * UI refinements
 * Additional testing and edge-case handling
-
 ---
 
 ## 🔮 Future Improvements
