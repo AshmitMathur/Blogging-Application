@@ -530,18 +530,28 @@ onClick={async () => {
             🔗 Copy Link
         </button>
 
-        <button
-            onClick={() => {
-                navigator.share?.({
+<button
+    onClick={async () => {
+        try {
+            if (navigator.share) {
+                await navigator.share({
                     title: data.title,
                     url: window.location.href,
                 });
-            }}
-            className=" px-4 py-2  rounded-lg bg-primary text-white text-sm hover:bg-primary/90 transition cursor-pointer
-            "
-        >
-            Share
-        </button>
+            } else {
+                await navigator.clipboard.writeText(window.location.href);
+                toast.success("Link copied!");
+            }
+        } catch (error) {
+            if (error.name !== "AbortError") {
+                toast.error("Unable to share this article");
+            }
+        }
+    }}
+    className="px-4 py-2 rounded-lg bg-primary text-white text-sm hover:bg-primary/90 transition cursor-pointer"
+>
+    Share
+</button>
 
     </div>
 
