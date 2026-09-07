@@ -20,6 +20,9 @@ import WriteBlog from "./pages/users/pages/WriteBlog";
 import Newsletter from './pages/admin/NewsLetter';
 import OAuthSuccess from './pages/users/pages/OAuthSuccess';
 
+import UserProtectedRoute from './components/UserProtectedRoute';
+import AdminProtectedRoute from './components/AdminProtectedRoute';
+
 const App = () => {
 
   const { isAdmin , authLoading} = useAppContext();
@@ -34,23 +37,28 @@ const App = () => {
         <Route path='register' element={<Register/>}/>
         <Route path='/login' element={<UserLogin/>}/>
         <Route path="/oauth-success" element={<OAuthSuccess />} />
-        <Route path="/write" element={<WriteBlog />} />
-        <Route path="/edit-blog/:id" element={<EditBlog />} />
-        <Route path="/profile/:username" element={<Profile />} />
-        <Route path="/edit-profile" element={<EditProfile />} />
-        <Route path="/blog/:id" element={<Blog/>} />
-        <Route path="/admin">
-    {isAdmin ? (
-        <Route element={<Layout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="addblog" element={<Addblog />} />
-            <Route path="listblog" element={<Listblog />} />
-            <Route path="comments" element={<Comments />} />
-            <Route path="newsletter" element={<Newsletter />} />
-            <Route path="editblog/:id" element={<EditBlog />} />
-        </Route>
-    ) : (
+<Route path="/profile/:username" element={<Profile />} />
+<Route path="/blog/:id" element={<Blog/>} />
+
+<Route element={<UserProtectedRoute />}>
+    <Route path="/write" element={<WriteBlog />} />
+    <Route path="/edit-blog/:id" element={<EditBlog />} />
+    <Route path="/edit-profile" element={<EditProfile />} />
+</Route>
+<Route path="/admin">
+    {!isAdmin ? (
         <Route index element={<Login />} />
+    ) : (
+        <Route element={<AdminProtectedRoute />}>
+            <Route element={<Layout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="addblog" element={<Addblog />} />
+                <Route path="listblog" element={<Listblog />} />
+                <Route path="comments" element={<Comments />} />
+                <Route path="newsletter" element={<Newsletter />} />
+                <Route path="editblog/:id" element={<EditBlog />} />
+            </Route>
+        </Route>
     )}
 </Route>
       </Routes>
