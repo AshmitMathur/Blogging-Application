@@ -24,6 +24,11 @@ const WriteBlog = () => {
     const editorRef = useRef(null);
     const quillRef = useRef(null);
 
+    const MAX_TITLE_LENGTH = 150;
+const MAX_SUBTITLE_LENGTH = 250;
+const MAX_CONTENT_LENGTH = 10000;
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
+
     useEffect(() => {
     if (!quillRef.current && editorRef.current) {
         quillRef.current = new Quill(editorRef.current, {
@@ -33,8 +38,16 @@ const WriteBlog = () => {
 }, []);
 
 const generateContent = async () => {
-    if (!title) {
-        return toast.error("Please enter a Title");
+    const trimmedTitle = title.trim();
+
+    if (!trimmedTitle) {
+        return toast.error("Please enter a title");
+    }
+
+    if (trimmedTitle.length > MAX_TITLE_LENGTH) {
+        return toast.error(
+            `Title cannot exceed ${MAX_TITLE_LENGTH} characters`
+        );
     }
 
     try {
@@ -43,7 +56,7 @@ const generateContent = async () => {
         const { data } = await axios.post(
             "/api/blog/generate",
             {
-                prompt: title,
+                prompt: trimmedTitle,
             }
         );
 
@@ -56,47 +69,129 @@ const generateContent = async () => {
 
     } catch (error) {
         toast.error(
-            error.response?.data?.message || error.message
+            error.response?.data?.message || "Unable to generate content"
         );
     } finally {
         setIsGenerating(false);
     }
 };
+
+
 const handleSubmit = async (e) => {
     e.preventDefault();
-const description = quillRef.current?.root.innerHTML || "";
-if (
-    !title.trim()  || !category.trim() ||
-    !description.replace(/<(.|\n)*?>/g, "").trim()
-) {
-    toast.error("Title, description and category are required");
-    return; }
+
+    const trimmedTitle = title.trim();
+    const trimmedSubTitle = subTitle.trim();
+
+    const description = quillRef.current?.root.innerHTML || "";
+
+    const plainTextDescription = description
+        .replace(/<(.|\n)*?>/g, "")
+        .trim();
+
+    if (!trimmedTitle) {
+        toast.error("Title is required");
+        return;
+    }
+
+    if (trimmedTitle.length > MAX_TITLE_LENGTH) {
+        toast.error(
+            `Title cannot exceed ${MAX_TITLE_LENGTH} characters`
+        );
+        return;
+    }
+
+    if (trimmedSubTitle.length > MAX_SUBTITLE_LENGTH) {
+        toast.error(
+            `Subtitle cannot exceed ${MAX_SUBTITLE_LENGTH} characters`
+        );
+        return;
+    }
+
+    if (!plainTextDescription) {
+        toast.error("Blog description is required");
+        return;
+    }
+
+    if (plainTextDescription.length > MAX_CONTENT_LENGTH) {
+        toast.error(
+            `Blog content cannot exceed ${MAX_CONTENT_LENGTH} characters`
+        );
+        return;
+    }
+
+    if (!category.trim()) {
+        toast.error("Please select a category");
+        return;
+    }
+
     if (!image) {
         toast.error("Please select a cover image");
-        return; }
+        return;
+    }
+
+    if (!image.type.startsWith("image/")) {
+        toast.error("Please select a valid image file");
+        return;
+    }
+
+    if (image.size > MAX_IMAGE_SIZE) {
+        toast.error("Cover image must be smaller than 5 MB");
+        return;
+    }
+
     try {
         setLoading(true);
+
         const formData = new FormData();
-        formData.append( "blog", JSON.stringify({ title, subTitle, description, category, isPublished: true
-            }) );
+
+        formData.append(
+            "blog",
+            JSON.stringify({
+                title: trimmedTitle,
+                subTitle: trimmedSubTitle,
+                description,
+                category,
+                isPublished: true
+            })
+        );
+
         formData.append("image", image);
+
         const { data } = await axios.post(
             "/api/blog/add",
-            formData );
-        if (data.success) { toast.success(data.message); await fetchBlogs(); setTitle(""); setSubTitle(""); setCategory(""); setImage(null);
+            formData
+        );
+
+        if (data.success) {
+            toast.success(data.message);
+
+            await fetchBlogs();
+
+            setTitle("");
+            setSubTitle("");
+            setCategory("");
+            setImage(null);
+
             if (quillRef.current) {
-    quillRef.current.root.innerHTML = "";
-                }
+                quillRef.current.root.innerHTML = "";
+            }
+
             navigate("/");
         } else {
             toast.error(data.message);
-        } } catch (error) {
+        }
+
+    } catch (error) {
         toast.error(
-            error.response?.data?.message || error.message );
+            error.response?.data?.message || "Unable to publish blog"
+        );
     } finally {
         setLoading(false);
     }
 };
+
+
     return (
         <>
             <Navbar />
@@ -119,6 +214,7 @@ if (
                         <input
                             type="text"
                             value={title}
+                            maxLength={MAX_TITLE_LENGTH}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="Enter your blog title"
                             className="w-full p-3 border border-gray-300 rounded-lg outline-none focus:border-primary dark:bg-zinc-900 dark:border-zinc-700 dark:text-white"
@@ -134,6 +230,7 @@ if (
                         <input
                             type="text"
                             value={subTitle}
+                            maxLength={MAX_SUBTITLE_LENGTH}
                             onChange={(e) => setSubTitle(e.target.value)}
                             placeholder="Enter a subtitle"
                             className="w-full p-3 border border-gray-300 rounded-lg outline-none focus:border-primary dark:bg-zinc-900 dark:border-zinc-700 dark:text-white"
@@ -145,10 +242,31 @@ if (
                             Cover Image
                         </label>
 
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => setImage(e.target.files[0])}
+<input
+    type="file"
+    accept="image/*"
+    onChange={(e) => {
+        const selectedImage = e.target.files[0];
+
+        if (!selectedImage) {
+            setImage(null);
+            return;
+        }
+
+        if (!selectedImage.type.startsWith("image/")) {
+            toast.error("Please select a valid image file");
+            e.target.value = "";
+            return;
+        }
+
+        if (selectedImage.size > MAX_IMAGE_SIZE) {
+            toast.error("Cover image must be smaller than 5 MB");
+            e.target.value = "";
+            return;
+        }
+
+        setImage(selectedImage);
+    }}
                             className="w-full p-3 border border-gray-300 rounded-lg dark:bg-zinc-900 dark:border-zinc-700 dark:text-gray-300"
                         />
 
