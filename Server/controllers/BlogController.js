@@ -50,13 +50,37 @@ export const addBlog = async (req, res)=>{
         res.json({success: false, message: error.message})
     }
 }
+const escapeRegex = (value) => {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
 
-export const getAllBlogs = async(req, res)=> {
+export const getAllBlogs = async(req, res) => {
     try {
-        const blogs = await Blog.find({ isPublished: true })
-        .populate("author", "name username avatar");
+        const { search, category } = req.query;
 
-                const blogsWithLikes = await Promise.all(
+        const filter = {
+            isPublished: true
+        };
+
+        // Search by title or subtitle
+        if (search && search.trim()) {
+            const searchTerm = escapeRegex(search.trim());
+
+            filter.$or = [
+                { title: { $regex: searchTerm, $options: "i" } },
+                { subTitle: { $regex: searchTerm, $options: "i" } }
+            ];
+        }
+
+        // Filter by category
+        if (category && category.trim() && category !== "All") {
+            filter.category = category.trim();
+        }
+
+        const blogs = await Blog.find(filter)
+            .populate("author", "name username avatar");
+
+        const blogsWithLikes = await Promise.all(
             blogs.map(async (blog) => {
                 const likeCount = await Like.countDocuments({
                     blog: blog._id
@@ -69,11 +93,18 @@ export const getAllBlogs = async(req, res)=> {
             })
         );
 
-        res.json({success: true, blogs: blogsWithLikes})
+        res.json({
+            success: true,
+            blogs: blogsWithLikes
+        });
+
     } catch (error) {
-        res.json({success: false, message: error.message})
+        res.json({
+            success: false,
+            message: error.message
+        });
     }
-}
+};
 
 export const getBlogById = async(req, res) => {
     try {

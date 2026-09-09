@@ -47,14 +47,33 @@ const logout = () => {
     navigate("/");
 };
 
-    const fetchBlogs = async()=> {
-        try {
-           const {data} =  await axios.get("/api/blog/all");
-           data.success ? setBlogs(data.blogs) : toast.error(data.message)
-        } catch (error) {
-            toast.error(error.message);
+const fetchBlogs = async (search = "", category = "All") => {
+    try {
+        const params = new URLSearchParams();
+
+        if (search.trim()) {
+            params.append("search", search.trim());
         }
+
+        if (category && category !== "All") {
+            params.append("category", category);
+        }
+
+        const query = params.toString();
+
+        const { data } = await axios.get(
+            query ? `/api/blog/all?${query}` : "/api/blog/all"
+        );
+
+        if (data.success) {
+            setBlogs(data.blogs);
+        } else {
+            toast.error(data.message);
+        }
+    } catch (error) {
+        toast.error(error.response?.data?.message || error.message);
     }
+};
 
     const fetchCurrentUser = async()=> {
         try {
