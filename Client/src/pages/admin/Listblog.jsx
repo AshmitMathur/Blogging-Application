@@ -10,6 +10,7 @@ const Listblog = () => {
     const [blogs, setBlogs] = useState([]);
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState('All');
+    const [loading, setLoading] = useState(true);
 
     const fetchBlogs = async () => {
         try {
@@ -21,7 +22,11 @@ const Listblog = () => {
                 toast.error(data.message);
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || error.message);
+            toast.error(
+                error.response?.data?.message || error.message
+            );
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -44,16 +49,19 @@ const Listblog = () => {
 
     return (
         <div className='flex-1 min-h-screen p-4 md:p-10 bg-blue-50/50 dark:bg-gray-950'>
+
             <div className='mb-6'>
                 <h1 className='text-2xl font-semibold text-gray-800 dark:text-gray-100'>
                     All Blogs
                 </h1>
+
                 <p className='mt-1 text-sm text-gray-500 dark:text-gray-400'>
                     Manage, edit and monitor all your blog posts.
                 </p>
             </div>
 
             <div className='flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between'>
+
                 <div className='relative w-full sm:w-72'>
                     <input
                         type='text'
@@ -79,13 +87,16 @@ const Listblog = () => {
                         </button>
                     ))}
                 </div>
+
             </div>
 
             <div className='mb-5 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl'>
+
                 <div className='bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm'>
                     <p className='text-sm text-gray-500 dark:text-gray-400'>
                         Total Blogs
                     </p>
+
                     <p className='mt-1 text-2xl font-semibold text-gray-800 dark:text-gray-100'>
                         {blogs.length}
                     </p>
@@ -95,6 +106,7 @@ const Listblog = () => {
                     <p className='text-sm text-gray-500 dark:text-gray-400'>
                         Published
                     </p>
+
                     <p className='mt-1 text-2xl font-semibold text-gray-800 dark:text-gray-100'>
                         {blogs.filter((blog) => blog.isPublished).length}
                     </p>
@@ -104,13 +116,28 @@ const Listblog = () => {
                     <p className='text-sm text-gray-500 dark:text-gray-400'>
                         Drafts
                     </p>
+
                     <p className='mt-1 text-2xl font-semibold text-gray-800 dark:text-gray-100'>
                         {blogs.filter((blog) => !blog.isPublished).length}
                     </p>
                 </div>
+
             </div>
 
-            {filteredBlogs.length === 0 ? (
+            {loading ? (
+
+                <div className='max-w-5xl bg-white dark:bg-gray-800 rounded-xl shadow-sm p-10 text-center'>
+                    <div className='flex flex-col items-center gap-3'>
+                        <div className='h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent' />
+
+                        <p className='text-gray-500 dark:text-gray-400'>
+                            Loading blogs...
+                        </p>
+                    </div>
+                </div>
+
+            ) : filteredBlogs.length === 0 ? (
+
                 <div className='max-w-5xl bg-white dark:bg-gray-800 rounded-xl shadow-sm p-10 text-center'>
                     <p className='text-gray-500 dark:text-gray-400'>
                         {search
@@ -118,23 +145,31 @@ const Listblog = () => {
                             : 'No blogs available.'}
                     </p>
                 </div>
+
             ) : (
+
                 <div className='relative max-w-5xl overflow-x-auto shadow-sm rounded-xl scrollbar-hide bg-white dark:bg-gray-800'>
+
                     <table className='w-full text-sm text-left text-gray-500 dark:text-gray-400'>
+
                         <thead className='text-xs text-gray-600 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700/50'>
                             <tr>
                                 <th scope='col' className='px-4 py-4 xl:px-6'>
                                     #
                                 </th>
+
                                 <th scope='col' className='px-4 py-4'>
                                     Blog Title
                                 </th>
+
                                 <th scope='col' className='px-4 py-4 max-sm:hidden'>
                                     Date
                                 </th>
+
                                 <th scope='col' className='px-4 py-4 max-sm:hidden'>
                                     Status
                                 </th>
+
                                 <th scope='col' className='px-4 py-4'>
                                     Actions
                                 </th>
@@ -151,9 +186,13 @@ const Listblog = () => {
                                 />
                             ))}
                         </tbody>
+
                     </table>
+
                 </div>
+
             )}
+
         </div>
     );
 };

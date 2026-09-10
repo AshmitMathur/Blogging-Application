@@ -4,14 +4,23 @@ import { motion } from "motion/react"
 import BlogCard from './BlogCard';
 import { useAppContext } from '../../context/AppContext';
 
+
 const BlogList = () => {
 
     const [menu, setmenu] = useState("All");
-    const { blogs, input, fetchBlogs } = useAppContext();
+
+    const {
+        blogs,
+        input,
+        fetchBlogs,
+        blogsLoading
+    } = useAppContext();
+
 
     useEffect(() => {
         fetchBlogs(input, menu);
     }, [input, menu]);
+
 
     return (
         <div>
@@ -47,13 +56,25 @@ const BlogList = () => {
                 ))}
             </div>
 
-            {blogs.length === 0 ? (
+
+            {blogsLoading ? (
+
+                <div className="mb-24 mx-8 sm:mx-16 xl:mx-40 py-16 text-center">
+                    <p className="text-gray-500 dark:text-gray-400">
+                        Loading blogs...
+                    </p>
+                </div>
+
+            ) : blogs.length === 0 ? (
+
                 <div className="mb-24 mx-8 sm:mx-16 xl:mx-40 py-16 text-center">
                     <p className="text-gray-500 dark:text-gray-400">
                         No blogs found matching your search and category.
                     </p>
                 </div>
+
             ) : (
+
                 <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8 mb-24 mx-8 sm:mx-16 xl:mx-40'>
                     {blogs.map((blog) => (
                         <BlogCard
@@ -62,10 +83,12 @@ const BlogList = () => {
                         />
                     ))}
                 </div>
+
             )}
 
         </div>
     )
 }
+
 
 export default BlogList

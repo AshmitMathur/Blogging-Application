@@ -24,6 +24,8 @@ const Profile = () => {
     const [activeTab, setActiveTab] = useState("published");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const [likedBlogsLoading, setLikedBlogsLoading] = useState(false);
+    const [bookmarkedBlogsLoading, setBookmarkedBlogsLoading] = useState(false);
 
     const fetchProfile = async () => {
         try {
@@ -45,7 +47,9 @@ const Profile = () => {
     }
     };
 
-    const fetchLikedBlogs = async () => {
+const fetchLikedBlogs = async () => {
+    setLikedBlogsLoading(true);
+
     try {
         const { data } = await axios.get("/api/blog/liked");
 
@@ -54,18 +58,23 @@ const Profile = () => {
         } else {
             toast.error(data.message);
         }
-} catch (error) {
-    console.error("Fetch Liked Blogs Error:", error);
+    } catch (error) {
+        console.error("Fetch Liked Blogs Error:", error);
 
-    toast.error(
-        error.response?.data?.message || "Failed to load liked blogs"
-    );
-}
+        toast.error(
+            error.response?.data?.message || "Failed to load liked blogs"
+        );
+    } finally {
+        setLikedBlogsLoading(false);
+    }
 };
 
 const fetchBookmarkedBlogs = async () => {
+    setBookmarkedBlogsLoading(true);
+
     try {
         const { data } = await axios.get("/api/bookmark/my");
+
         if (data.success) {
             setBookmarkedBlogs(
                 (data.bookmarks || []).map(
@@ -75,13 +84,16 @@ const fetchBookmarkedBlogs = async () => {
         } else {
             toast.error(data.message);
         }
-} catch (error) {
-    console.error("Fetch Bookmarked Blogs Error:", error);
+    } catch (error) {
+        console.error("Fetch Bookmarked Blogs Error:", error);
 
-    toast.error(
-        error.response?.data?.message || "Failed to load bookmarked blogs"
-    );
-}
+        toast.error(
+            error.response?.data?.message ||
+            "Failed to load bookmarked blogs"
+        );
+    } finally {
+        setBookmarkedBlogsLoading(false);
+    }
 };
 
 useEffect(() => {
@@ -340,8 +352,12 @@ if (error || !user) {
                 </p>
             </div>
 
-            {likedBlogs.length === 0 ? (
-                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl py-16 px-5 text-center">
+{likedBlogsLoading ? (
+    <div className="py-16 flex justify-center">
+        <Loader />
+    </div>
+) : likedBlogs.length === 0 ? (
+    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl py-16 px-5 text-center">
 
                     <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
                         No liked blogs yet
@@ -380,8 +396,12 @@ if (error || !user) {
                 </p>
             </div>
 
-            {bookmarkedBlogs.length === 0 ? (
-                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl py-16 px-5 text-center">
+{bookmarkedBlogsLoading ? (
+    <div className="py-16 flex justify-center">
+        <Loader />
+    </div>
+) : bookmarkedBlogs.length === 0 ? (
+    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl py-16 px-5 text-center">
 
                     <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
                         No bookmarked blogs yet

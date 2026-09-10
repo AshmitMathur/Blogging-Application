@@ -1,4 +1,4 @@
-import {createContext, useContext, useEffect, useState} from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -9,7 +9,8 @@ axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 const AppContext = createContext();
 
-export const AppProvider = ({children}) => {
+
+export const AppProvider = ({ children }) => {
 
     const navigate = useNavigate();
     const [token, setToken] = useState(null);
@@ -18,91 +19,100 @@ export const AppProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [myBlogs, setmyBlogs] = useState([]);
     const [isAdmin, setIsAdmin] = useState(false);
-const [authLoading, setAuthLoading] = useState(true);
+    const [authLoading, setAuthLoading] = useState(true);
+    const [blogsLoading, setBlogsLoading] = useState(false);
 
-const setAuthToken = (newToken) => {
-    if (newToken) {
-        localStorage.setItem("token", newToken);
-        axios.defaults.headers.common["Authorization"] = newToken;
-        setToken(newToken);
-    } else {
-        localStorage.removeItem("token");
-        delete axios.defaults.headers.common["Authorization"];
-        setToken(null);
-    }
-};
+    const setAuthToken = (newToken) => {
+        if (newToken) {
+            localStorage.setItem("token", newToken);
+            axios.defaults.headers.common["Authorization"] = newToken;
+            setToken(newToken);
+        } else {
+            localStorage.removeItem("token");
+            delete axios.defaults.headers.common["Authorization"];
+            setToken(null);
+        }
+    };
 
-    
-    
+
     const removeBlog = (blogId) => {
         setBlogs((prev) => prev.filter((blog) => blog._id !== blogId));
         setmyBlogs((prev) => prev.filter((blog) => blog._id !== blogId));
     }
 
-const logout = () => {
-    setAuthToken(null);
-    setUser(null);
-    setIsAdmin(false);
-    setmyBlogs([]);
-    navigate("/");
-};
 
-const fetchBlogs = async (search = "", category = "All") => {
-    try {
-        const params = new URLSearchParams();
-
-        if (search.trim()) {
-            params.append("search", search.trim());
-        }
-
-        if (category && category !== "All") {
-            params.append("category", category);
-        }
-
-        const query = params.toString();
-
-        const { data } = await axios.get(
-            query ? `/api/blog/all?${query}` : "/api/blog/all"
-        );
-
-        if (data.success) {
-            setBlogs(data.blogs);
-        } else {
-            toast.error(data.message);
-        }
-    } catch (error) {
-        toast.error(error.response?.data?.message || error.message);
-    }
-};
-
-    const fetchCurrentUser = async()=> {
-        try {
-            const {data} = await axios.get("/api/auth/me");
-
-            if(data.success){
-                setUser(data.user);
-            }
-            else{
-                setUser(null);
-            }
-        }catch (error) {
-        setUser(null);
-
-    if (error.response?.status === 401) {
+    const logout = () => {
         setAuthToken(null);
+        setUser(null);
         setIsAdmin(false);
         setmyBlogs([]);
-    }
-}
+        navigate("/");
+    };
+
+
+    const fetchBlogs = async (search = "", category = "All") => {
+        setBlogsLoading(true);
+
+        try {
+            const params = new URLSearchParams();
+
+            if (search.trim()) {
+                params.append("search", search.trim());
+            }
+
+            if (category && category !== "All") {
+                params.append("category", category);
+            }
+
+            const query = params.toString();
+
+            const { data } = await axios.get(
+                query ? `/api/blog/all?${query}` : "/api/blog/all"
+            );
+
+            if (data.success) {
+                setBlogs(data.blogs);
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || error.message);
+        } finally {
+            setBlogsLoading(false);
+        }
+    };
+
+
+    const fetchCurrentUser = async () => {
+        try {
+            const { data } = await axios.get("/api/auth/me");
+
+            if (data.success) {
+                setUser(data.user);
+            }
+            else {
+                setUser(null);
+            }
+        } catch (error) {
+            setUser(null);
+
+            if (error.response?.status === 401) {
+                setAuthToken(null);
+                setIsAdmin(false);
+                setmyBlogs([]);
+            }
+        }
     }
 
-    const fetchMyBlogs = async() => {
+
+    const fetchMyBlogs = async () => {
         try {
-            const { data} = await axios.get("/api/blog/my-blogs");
-            if(data.success){
+            const { data } = await axios.get("/api/blog/my-blogs");
+
+            if (data.success) {
                 setmyBlogs(data.blogs);
             }
-            else{
+            else {
                 toast.error(data.message);
             }
         } catch (error) {
@@ -110,69 +120,95 @@ const fetchBlogs = async (search = "", category = "All") => {
         }
     }
 
+
     const value = {
-        axios, navigate, token, blogs, setBlogs, input, setInput, 
-        user, setUser, fetchCurrentUser, myBlogs, setmyBlogs, fetchMyBlogs, 
-        removeBlog, isAdmin, setIsAdmin, logout, fetchBlogs, authLoading, setAuthToken
+        axios,
+        navigate,
+        token,
+        blogs,
+        setBlogs,
+        input,
+        setInput,
+        user,
+        setUser,
+        fetchCurrentUser,
+        myBlogs,
+        setmyBlogs,
+        fetchMyBlogs,
+        removeBlog,
+        isAdmin,
+        setIsAdmin,
+        logout,
+        fetchBlogs,
+        blogsLoading,
+        authLoading,
+        setAuthToken
     };
 
-useEffect(() => {
-    const initializeApp = async () => {
-        fetchBlogs();
-        const storedToken = localStorage.getItem("token");
-if (!storedToken) {
-    setAuthToken(null);
-    setUser(null);
-    setIsAdmin(false);
-    setAuthLoading(false);
-    return;
-}
-        try {
-const payload = JSON.parse(
-    atob(storedToken.split(".")[1])
-);
 
-if (payload.exp && payload.exp * 1000 < Date.now()) {
-    throw new Error("Token expired");
-}
+    useEffect(() => {
+        const initializeApp = async () => {
 
-setAuthToken(storedToken);
+            const storedToken = localStorage.getItem("token");
 
-if (payload.role === "admin") {
-    setIsAdmin(true);
-    setUser(null);
-}
-else if (payload.role === "user") {
-    setIsAdmin(false);
-    await fetchCurrentUser();
-    await fetchMyBlogs();
-}
-else {
-    setIsAdmin(false);
-    setUser(null);
-     throw new Error("Invalid token role");
-    }
-}catch (error) {
-    console.log("Invalid token:", error);
+            if (!storedToken) {
+                setAuthToken(null);
+                setUser(null);
+                setIsAdmin(false);
+                setAuthLoading(false);
+                return;
+            }
 
-    setAuthToken(null);
-    setUser(null);
-    setIsAdmin(false);
-    setmyBlogs([]);
-}
+            try {
+                const payload = JSON.parse(
+                    atob(storedToken.split(".")[1])
+                );
 
-        setAuthLoading(false);
-    };
-    initializeApp();
-}, []);
+                if (payload.exp && payload.exp * 1000 < Date.now()) {
+                    throw new Error("Token expired");
+                }
 
-    return(
+                setAuthToken(storedToken);
+
+                if (payload.role === "admin") {
+                    setIsAdmin(true);
+                    setUser(null);
+                }
+                else if (payload.role === "user") {
+                    setIsAdmin(false);
+                    await fetchCurrentUser();
+                    await fetchMyBlogs();
+                }
+                else {
+                    setIsAdmin(false);
+                    setUser(null);
+                    throw new Error("Invalid token role");
+                }
+
+            } catch (error) {
+                console.log("Invalid token:", error);
+
+                setAuthToken(null);
+                setUser(null);
+                setIsAdmin(false);
+                setmyBlogs([]);
+            }
+
+            setAuthLoading(false);
+        };
+
+        initializeApp();
+    }, []);
+
+
+    return (
         <AppContext.Provider value={value}>
             {children}
         </AppContext.Provider>
     )
 }
 
-export const useAppContext = ()=>{
+
+export const useAppContext = () => {
     return useContext(AppContext);
 }
