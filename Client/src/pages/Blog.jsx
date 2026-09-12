@@ -30,6 +30,7 @@ const Blog = () => {
   const [likeCount, setLikeCount] = useState(0);
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
+  const [commentsLoading, setCommentsLoading] = useState(false);
 
 const fetchBlogData = async () => {
     try {
@@ -56,23 +57,27 @@ const fetchBlogData = async () => {
 };
 
 const fetchComments = async () => {
+    setCommentsLoading(true);
+
     try {
         const { data } = await axios.post("/api/blog/comments", {
             blogId: id,
         });
-
 
         if (data.success) {
             setComments(data.comments || []);
         } else {
             toast.error(data.message);
         }
-    }catch (error) {
-    toast.error(
-        error.response?.data?.message || error.message
-    );
-}
+    } catch (error) {
+        toast.error(
+            error.response?.data?.message || error.message
+        );
+    } finally {
+        setCommentsLoading(false);
+    }
 };
+
 const fetchLikeData = async () => {
     try {
         const { data } = await axios.get(`/api/blog/like/${id}`);
@@ -386,7 +391,16 @@ if (error || !data) {
 
 </div>
 <div className="flex flex-col gap-4">
-    {comments.map((item, index) => (
+    {commentsLoading ? (
+        <p className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+            Loading comments...
+        </p>
+    ) : comments.length === 0 ? (
+        <p className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+            No comments yet. Be the first to comment!
+        </p>
+    ) : (
+        comments.map((item, index) => (
         <div
             key={index}
             className=" relative  p-5  rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md transition-shadow
@@ -409,6 +423,7 @@ if (error || !data) {
                 {Moment(item.createdAt).fromNow()}
             </div>
         </div>
+        )
     ))}
 </div>
             </div>
