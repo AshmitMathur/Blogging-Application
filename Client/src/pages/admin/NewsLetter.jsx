@@ -8,38 +8,47 @@ const Newsletter = () => {
     const [subscribers, setSubscribers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
+    const [deletingIds, setDeletingIds] = useState(() => new Set());
 
     const filteredSubscribers = subscribers.filter((subscriber) =>
         subscriber.email.toLowerCase().includes(search.toLowerCase())
     );
 
-    const deleteSubscriber = async (id) => {
-        const confirmed = window.confirm(
-            "Are you sure you want to remove this subscriber?"
+const deleteSubscriber = async (id) => {
+    const confirmed = window.confirm(
+        "Are you sure you want to remove this subscriber?"
+    );
+
+    if (!confirmed) return;
+
+    setDeletingIds((prev) => new Set(prev).add(id));
+
+    try {
+        const { data } = await axios.delete(
+            `/api/admin/newsletter/${id}`
         );
 
-        if (!confirmed) return;
-
-        try {
-            const { data } = await axios.delete(
-                `/api/admin/newsletter/${id}`
+        if (data.success) {
+            setSubscribers((prev) =>
+                prev.filter((subscriber) => subscriber._id !== id)
             );
 
-            if (data.success) {
-                setSubscribers((prev) =>
-                    prev.filter((subscriber) => subscriber._id !== id)
-                );
-
-                toast.success(data.message);
-            } else {
-                toast.error(data.message);
-            }
-        } catch (error) {
-            toast.error(
-                error.response?.data?.message || error.message
-            );
+            toast.success(data.message);
+        } else {
+            toast.error(data.message);
         }
-    };
+    } catch (error) {
+        toast.error(
+            error.response?.data?.message || error.message
+        );
+    } finally {
+        setDeletingIds((prev) => {
+            const next = new Set(prev);
+            next.delete(id);
+            return next;
+        });
+    }
+};
 
     const fetchSubscribers = async () => {
         try {
@@ -169,14 +178,13 @@ const Newsletter = () => {
                                     </td>
 
                                     <td className="px-6 py-4">
-                                        <button
-                                            onClick={() =>
-                                                deleteSubscriber(subscriber._id)
-                                            }
-                                            className="px-3 py-1.5 rounded-md text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-900/20 dark:hover:bg-red-900/40 transition cursor-pointer"
-                                        >
-                                            Delete
-                                        </button>
+<button
+    onClick={() => deleteSubscriber(subscriber._id)}
+    disabled={deletingIds.has(subscriber._id)}
+    className="px-3 py-1.5 rounded-md text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-900/20 dark:hover:bg-red-900/40 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+>
+    {deletingIds.has(subscriber._id) ? "Deleting..." : "Delete"}
+</button>
                                     </td>
                                 </tr>
                             ))}
