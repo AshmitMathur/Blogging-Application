@@ -14,25 +14,29 @@ const Dashboard = () => {
         newsletterSubscribers: 0,
         recentBlogs: []
     });
+    const [loading, setLoading] = useState(true);
 
     const { axios } = useAppContext();
     const navigate = useNavigate();
 
-    const fetchDashboard = async () => {
-        try {
-            const { data } = await axios.get("/api/admin/dashboard");
+const fetchDashboard = async () => {
+    try {
+        const { data } = await axios.get("/api/admin/dashboard");
 
-            if (data.success) {
-                setDashboardData(data.dashboardData);
-            } else {
-                toast.error(data.message);
-            }
-        } catch (error) {
-            toast.error(
-                error.response?.data?.message || error.message
-            );
+        if (data.success) {
+            setDashboardData(data.dashboardData);
+        } else {
+            toast.error(data.message);
         }
-    };
+    } catch (error) {
+        toast.error(
+            error.response?.data?.message || error.message
+        );
+    } finally {
+        setLoading(false);
+    }
+};
+
     useEffect(() => {
         fetchDashboard();
     }, []);
@@ -184,16 +188,36 @@ const Dashboard = () => {
                                 </th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {dashboardData.recentBlogs.map((blog, index) => (
-                                <BlogTableItem
-                                    key={blog._id}
-                                    blog={blog}
-                                    fetchBlogs={fetchDashboard}
-                                    index={index + 1}
-                                />
-                            ))}
-                        </tbody>
+<tbody>
+    {loading ? (
+        <tr>
+            <td
+                colSpan={5}
+                className="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
+            >
+                Loading dashboard...
+            </td>
+        </tr>
+    ) : dashboardData.recentBlogs.length === 0 ? (
+        <tr>
+            <td
+                colSpan={5}
+                className="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
+            >
+                No blogs found.
+            </td>
+        </tr>
+    ) : (
+        dashboardData.recentBlogs.map((blog, index) => (
+            <BlogTableItem
+                key={blog._id}
+                blog={blog}
+                fetchBlogs={fetchDashboard}
+                index={index + 1}
+            />
+        ))
+    )}
+</tbody>
                     </table>
                 </div>
             </div>
