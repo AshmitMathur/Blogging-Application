@@ -24,15 +24,23 @@ const WriteBlog = () => {
     const editorRef = useRef(null);
     const quillRef = useRef(null);
 
-    const MAX_TITLE_LENGTH = 150;
+    const [contentLength, setContentLength] = useState(0);
+
+const MAX_TITLE_LENGTH = 150;
 const MAX_SUBTITLE_LENGTH = 250;
 const MAX_CONTENT_LENGTH = 10000;
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
 
-    useEffect(() => {
+useEffect(() => {
     if (!quillRef.current && editorRef.current) {
         quillRef.current = new Quill(editorRef.current, {
             theme: "snow",
+        });
+
+        quillRef.current.on("text-change", () => {
+            setContentLength(
+                quillRef.current.getText().trim().length
+            );
         });
     }
 }, []);
@@ -60,10 +68,15 @@ const generateContent = async () => {
             }
         );
 
-        if (data.success) {
-            quillRef.current.root.innerHTML = parse(data.content);
-            toast.success("Content generated successfully");
-        } else {
+if (data.success) {
+    quillRef.current.root.innerHTML = parse(data.content);
+
+    setContentLength(
+        quillRef.current.getText().trim().length
+    );
+
+    toast.success("Content generated successfully");
+}else {
             toast.error(data.message);
         }
 
@@ -173,9 +186,10 @@ const handleSubmit = async (e) => {
             setCategory("");
             setImage(null);
 
-            if (quillRef.current) {
-                quillRef.current.root.innerHTML = "";
-            }
+if (quillRef.current) {
+    quillRef.current.root.innerHTML = "";
+    setContentLength(0);
+}
 
             navigate("/");
         } else {
@@ -196,7 +210,7 @@ const handleSubmit = async (e) => {
         <>
             <Navbar />
             <div className="max-w-4xl mx-auto py-12 px-5">
-                <h1 className="text-3xl font-bold mb-2 dark:text-white">
+                <h1 className="text-3xl font-bold dark:text-white">
                     Write a Blog
                 </h1>
                 <p className="text-gray-500 mb-8">
@@ -208,9 +222,15 @@ const handleSubmit = async (e) => {
                 >
                     {/* Title */}
                     <div>
-                        <label className="block font-medium mb-2 dark:text-gray-300">
-                            Title
-                        </label>
+<div className="flex items-center justify-between mb-2">
+    <label className="font-medium dark:text-gray-300">
+        Title
+    </label>
+
+    <span className="text-xs text-gray-400">
+        {title.length}/{MAX_TITLE_LENGTH}
+    </span>
+</div>
                         <input
                             type="text"
                             value={title}
@@ -223,9 +243,15 @@ const handleSubmit = async (e) => {
                     </div>
                     {/* Subtitle */}
                     <div>
-                        <label className="block font-medium mb-2 dark:text-gray-300">
-                            Subtitle
-                        </label>
+<div className="flex items-center justify-between mb-2">
+    <label className="font-medium dark:text-gray-300">
+        Subtitle
+    </label>
+
+    <span className="text-xs text-gray-400">
+        {subTitle.length}/{MAX_SUBTITLE_LENGTH}
+    </span>
+</div>
 
                         <input
                             type="text"
@@ -279,9 +305,15 @@ const handleSubmit = async (e) => {
 
 {/* Content */}
 <div>
-    <p className="font-medium mb-2 dark:text-gray-300">
+<div className="flex items-center justify-between mb-2">
+    <p className="font-medium dark:text-gray-300">
         Content
     </p>
+
+<span className="text-xs text-gray-400">
+    {contentLength}/{MAX_CONTENT_LENGTH}
+</span>
+</div>
 
     <div className="w-full max-w-3xl h-74 pb-16 sm:pb-10 pt-2 relative">
         
@@ -333,10 +365,14 @@ const handleSubmit = async (e) => {
                     {/* Submit */}
                     <button
                         type="submit"
-                        disabled={loading}
+                        disabled={loading || isGenerating}
                         className="w-fit bg-primary text-white px-8 py-3 rounded-lg hover:opacity-90 transition disabled:opacity-50"
                     >
-                        {loading ? "Publishing..." : "Publish Blog"}
+                        {loading
+    ? "Publishing..."
+    : isGenerating
+    ? "Generating..."
+    : "Publish Blog"}
                     </button>
 
                 </form>
