@@ -16,6 +16,7 @@ const WriteBlog = () => {
     const [title, setTitle] = useState("");
     const [subTitle, setSubTitle] = useState("");
     const [image, setImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState("");
     const [loading, setLoading] = useState(false);
     const [category, setCategory] = useState("");
     const [isGenerating, setIsGenerating] = useState(false);
@@ -44,6 +45,20 @@ useEffect(() => {
         });
     }
 }, []);
+
+useEffect(() => {
+    if (!image) {
+        setImagePreview("");
+        return;
+    }
+
+    const previewUrl = URL.createObjectURL(image);
+    setImagePreview(previewUrl);
+
+    return () => {
+        URL.revokeObjectURL(previewUrl);
+    };
+}, [image]);
 
 const generateContent = async () => {
     const trimmedTitle = title.trim();
@@ -296,11 +311,21 @@ if (quillRef.current) {
                             className="w-full p-3 border border-gray-300 rounded-lg dark:bg-zinc-900 dark:border-zinc-700 dark:text-gray-300"
                         />
 
-                        {image && (
-                            <p className="mt-2 text-sm text-gray-500">
-                                Selected: {image.name}
-                            </p>
-                        )}
+{image && (
+    <div className="mt-3">
+        <p className="text-sm text-gray-500 mb-2">
+            Selected: {image.name}
+        </p>
+
+        {imagePreview && (
+            <img
+                src={imagePreview}
+                alt="Cover image preview"
+                className="w-full max-w-sm h-48 object-cover rounded-lg border border-gray-300"
+            />
+        )}
+    </div>
+)}
                     </div>
 
 {/* Content */}
