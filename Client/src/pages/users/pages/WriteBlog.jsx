@@ -24,6 +24,7 @@ const WriteBlog = () => {
 
     const editorRef = useRef(null);
     const quillRef = useRef(null);
+    const imageInputRef = useRef(null);
 
     const [contentLength, setContentLength] = useState(0);
 
@@ -283,7 +284,7 @@ if (quillRef.current) {
                             Cover Image
                         </label>
 
-<input
+<input ref={imageInputRef}
     type="file"
     accept="image/*"
     onChange={(e) => {
@@ -324,6 +325,19 @@ if (quillRef.current) {
                 className="w-full max-w-sm h-48 object-cover rounded-lg border border-gray-300"
             />
         )}
+        <button
+    type="button"
+    onClick={() => {
+        setImage(null);
+
+        if (imageInputRef.current) {
+            imageInputRef.current.value = "";
+        }
+    }}
+    className="mt-2 text-sm text-red-600 hover:underline"
+>
+    Remove image
+</button>
     </div>
 )}
                     </div>
