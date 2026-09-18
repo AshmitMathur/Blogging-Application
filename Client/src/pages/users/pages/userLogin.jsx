@@ -146,19 +146,15 @@ const {
     <span className="text-lg">G</span>
     Continue with Google
 </button>
-
                 </form>
-
                 <p className="text-center mt-6 text-gray-600 dark:text-gray-300">
                     New user?{" "}
                     <span
                         onClick={() => navigate("/register")}
                         className="text-primary cursor-pointer font-medium"
-                    >
-                        Register here
+                    > Register here
                     </span>
                 </p>
-
             </div>
         </div>
     );
