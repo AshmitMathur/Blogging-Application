@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-
 const likeSchema = new mongoose.Schema(
     {
         user: {
@@ -16,9 +15,6 @@ const likeSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
-
 likeSchema.index({ user: 1, blog: 1 }, { unique: true });
-
 const Like = mongoose.model("Like", likeSchema);
-
 export default Like;

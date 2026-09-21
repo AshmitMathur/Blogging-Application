@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-
 const bookmarkSchema = new mongoose.Schema(
     {
         user: {
@@ -17,11 +16,9 @@ const bookmarkSchema = new mongoose.Schema(
         timestamps: true,
     }
 );
-
 bookmarkSchema.index(
     { user: 1, blog: 1 },
     { unique: true }
 );
-
 const Bookmark = mongoose.model("Bookmark", bookmarkSchema);
 export default Bookmark;
