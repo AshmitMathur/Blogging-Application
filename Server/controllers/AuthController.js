@@ -2,7 +2,6 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt  from "jsonwebtoken";
 import googleClient from "../configs/google.js";
-
 export const register = async (req, res) => {
     try {
         const { name, username, email, password } = req.body;
@@ -13,7 +12,6 @@ export const register = async (req, res) => {
                 message: "All fields are required",
             });
         }
-
         const passwordRegex =
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
@@ -24,31 +22,25 @@ export const register = async (req, res) => {
                     "Password must be at least 8 characters and contain an uppercase letter, lowercase letter, number, and special character",
             });
         }
-
         const existingEmail = await User.findOne({ email });
-
         if (existingEmail) {
             return res.json({
                 success: false,
                 message: "Email already exists",
             });
         }
-
         const existingUsername = await User.findOne({ username });
-
         if (existingUsername) {
             return res.json({
                 success: false,
                 message: "Username already exists",
             });
         }
-
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await User.create({
             name, username, email, password: hashedPassword,
         });
-
 const token = jwt.sign(
     {
         id: user._id,
@@ -57,7 +49,6 @@ const token = jwt.sign(
     process.env.JWT_SECRET,
     {expiresIn: "7d"}
 );
-
         res.json({
     success: true,
     message: "Registration successful",
@@ -70,8 +61,6 @@ const token = jwt.sign(
         role: user.role,
     },
 });
-
-
     } catch (error) {
         res.json({
             success: false,
@@ -79,7 +68,6 @@ const token = jwt.sign(
         });
     }
 };
-
 export const getCurrentUser = async (req, res) => {
     try {
         const user = await User.findById(req.userId).select("-password");
@@ -103,7 +91,6 @@ export const getCurrentUser = async (req, res) => {
         });
     }
 };
-
 export const login = async (req, res) => {
     try {
         const {email, password} = req.body;
@@ -188,8 +175,6 @@ export const googleLogin = async (req, res) => {
         });
     }
 };
-
-
 export const googleCallback = async (req, res) => {
     try {
         const { code } = req.query;
