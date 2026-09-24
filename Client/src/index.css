@@ -1,48 +1,28 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 @import "tailwindcss";
-
 @custom-variant dark (&:where(.dark, .dark *));
-
 *{
   font-family: "Outfit", sans-serif;
 }
-
 ::-webkit-scrollbar{
   display: none;
 }
-
 @theme{
   --color-primary: #5044E5;
 }
-
 .rich-text { font-size: 15px;  }
-
 .rich-text p { margin-bottom: 16px; color: #292929; }
-
 .rich-text h1 { font-size: 36px; font-weight: 700; color: #252525 ; margin: 32px 0; }
-
 .rich-text h2 { font-size: 22px; font-weight: 700; color: #252525 ; margin: 24px 0; }
-
 .rich-text h3 { font-size: 18px; font-weight: 600; color: #333333 ; margin: 20px 0; }
-
 .rich-text h4 { font-size: 16px; font-weight: 500; color: #444444 ; margin: 16px 0; }
-
 .rich-text h5 { font-size: 14px; font-weight: 400; color: #555555 ; margin: 12px 0; }
-
 .rich-text h6 { font-size: 12px; font-weight: 400; color: #666666 ; margin: 8px 0; }
-
 .rich-text strong { font-weight: 700; }
-
 .rich-text ol { margin-left: 30px; list-style-type: decimal; }
-
 .rich-text ul { margin-left: 30px; list-style-type: disc; }
-
 .rich-text li { margin-bottom: 8px; }
-
 .rich-text a { color: #007AFF }
-
-
 .dark .rich-text h1,
 .dark .rich-text h2,
 .dark .rich-text h3,
@@ -51,7 +31,6 @@
 .dark .rich-text h6 {
     color: rgb(209 213 219);
 }
-
 .dark .rich-text p,
 .dark .rich-text li,
 .dark .rich-text strong,
@@ -59,47 +38,36 @@
 .dark .rich-text blockquote {
     color: rgb(209 213 219);
 }
-
 .dark .rich-text a {
     color: rgb(96 165 250);
 }
-
 .dark .rich-text code {
     color: rgb(248 250 252);
 }
-
 .dark .rich-text pre {
     background: rgb(31 41 55);
 }
-
 .dark .ql-container {
     background: #111827;
 }
-
 .dark .ql-editor {
     color: #f3f4f6;
 }
-
 .dark .ql-editor.ql-blank::before {
     color: #9ca3af;
 }
-
 .dark .ql-toolbar {
     background: #1f2937;
 }
-
 .dark .ql-toolbar .ql-stroke {
     stroke: white !important;
 }
-
 .dark .ql-toolbar .ql-fill {
     fill: white !important;
 }
-
 .dark .ql-toolbar .ql-picker-label {
     color: white !important;
 }
-
 .dark .ql-editor pre {
     background: #1f2937;
     color: #f9fafb;
@@ -107,7 +75,6 @@
     border-radius: 8px;
     overflow-x: auto;
 }
-
 .dark .ql-editor code {
     background: #374151;
     color: black;
