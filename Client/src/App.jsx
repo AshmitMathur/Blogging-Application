@@ -19,12 +19,9 @@ import EditProfile from "./pages/users/pages/EditProfile";
 import WriteBlog from "./pages/users/pages/WriteBlog";
 import Newsletter from './pages/admin/NewsLetter';
 import OAuthSuccess from './pages/users/pages/OAuthSuccess';
-
 import UserProtectedRoute from './components/UserProtectedRoute';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
-
 const App = () => {
-
   const { isAdmin , authLoading} = useAppContext();
   if (authLoading) {
     return null;
@@ -39,7 +36,6 @@ const App = () => {
         <Route path="/oauth-success" element={<OAuthSuccess />} />
 <Route path="/profile/:username" element={<Profile />} />
 <Route path="/blog/:id" element={<Blog/>} />
-
 <Route element={<UserProtectedRoute />}>
     <Route path="/write" element={<WriteBlog />} />
     <Route path="/edit-blog/:id" element={<EditBlog />} />
@@ -65,5 +61,4 @@ const App = () => {
     </div>
   )
 }
-
 export default App
