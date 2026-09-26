@@ -2,7 +2,6 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
 import toast from 'react-hot-toast';
-
 const BlogCard = ({blog, onDelete}) => {
     const {title, description, category,image, _id, likeCount} = blog;
     const { user, axios, removeBlog, isAdmin } = useAppContext();
@@ -10,8 +9,6 @@ const BlogCard = ({blog, onDelete}) => {
     
     const isOwner = isAdmin ||
     (user && blog.author?._id === user._id);
-
-
   return (
     <div onClick={()=> navigate(`/blog/${_id}`)} className='w-full rounded-lg overflow-hidden shadow hover:scale-102 hover:shadow-primary/25 duration-300 cursor-pointer dark:bg-gray-950'>
 
@@ -77,10 +74,8 @@ const BlogCard = ({blog, onDelete}) => {
         </button>
     </>
 )}
-
       </div>
     </div>
   )
 }
-
 export default BlogCard
