@@ -1,11 +1,9 @@
 import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAppContext } from "../../context/AppContext";
-
 const UserProtectedRoute = () => {
     const { user } = useAppContext();
     const location = useLocation();
-
     if (!user) {
         return (
             <Navigate
@@ -18,5 +16,4 @@ const UserProtectedRoute = () => {
 
     return <Outlet />;
 };
-
 export default UserProtectedRoute;
