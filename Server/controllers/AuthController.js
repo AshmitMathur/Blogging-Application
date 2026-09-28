@@ -5,7 +5,6 @@ import googleClient from "../configs/google.js";
 export const register = async (req, res) => {
     try {
         const { name, username, email, password } = req.body;
-
         if (!name || !username || !email || !password) {
             return res.json({
                 success: false,
@@ -37,7 +36,6 @@ export const register = async (req, res) => {
             });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-
         const user = await User.create({
             name, username, email, password: hashedPassword,
         });
@@ -71,19 +69,16 @@ const token = jwt.sign(
 export const getCurrentUser = async (req, res) => {
     try {
         const user = await User.findById(req.userId).select("-password");
-
         if (!user) {
             return res.json({
                 success: false,
                 message: "User not found",
             });
         }
-
         res.json({
             success: true,
             user,
         });
-
     } catch (error) {
         res.json({
             success: false,
@@ -101,25 +96,20 @@ export const login = async (req, res) => {
                 message: "Email and Password are required",
             });
         }
-
         const user = await User.findOne({ email });
-
         if(!user){
             return res.json({
                 success: false,
                 message: "Invalid Email or Password",
             });
         }
-
         const isMatch = await bcrypt.compare(password, user.password);
-
         if(!isMatch){
             return res.json({
                 success: false,
                 message: "Invalid Email or Password"
             })
         }
-
 const token = jwt.sign(
     {
         id: user._id,
@@ -128,7 +118,6 @@ const token = jwt.sign(
     process.env.JWT_SECRET,
     {expiresIn: "7d"}
 );
-
         res.json({
     success: true,
     message: "Login successful",
@@ -141,17 +130,13 @@ const token = jwt.sign(
         role: user.role,
     },
 });
-
     } catch (error) {
         res.json({
             success: false,
             message: error.message
         });
-    }
-
-    
+    } 
 };
-
 export const googleLogin = async (req, res) => {
     try {
         const authUrl = googleClient.generateAuthUrl({
@@ -163,9 +148,7 @@ export const googleLogin = async (req, res) => {
             ],
             prompt: "select_account",
         });
-
         res.redirect(authUrl);
-
     } catch (error) {
         console.error("Google Login Error:", error);
 
@@ -178,16 +161,13 @@ export const googleLogin = async (req, res) => {
 export const googleCallback = async (req, res) => {
     try {
         const { code } = req.query;
-
         if (!code) {
             return res.status(400).send("Google authentication failed");
         }
         const { tokens } = await googleClient.getToken(code);
-
         if (!tokens.id_token) {
             return res.status(400).send("Google authentication failed");
         }
-
         const ticket = await googleClient.verifyIdToken({
             idToken: tokens.id_token,
             audience: process.env.GOOGLE_CLIENT_ID,
@@ -214,7 +194,6 @@ export const googleCallback = async (req, res) => {
                 user.avatar = picture;
             }
             await user.save();
-
         } else {
             let baseUsername = name
                 .toLowerCase()
