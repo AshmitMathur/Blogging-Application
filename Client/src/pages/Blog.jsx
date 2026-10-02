@@ -8,13 +8,9 @@ import Loader from '../components/Loader';
 import { useAppContext } from '../../context/AppContext';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
-
 const Blog = () => {
   const {id} = useParams();
-
   const {axios, user, isAdmin, fetchBlogs} = useAppContext();
-
-
   const [data, setData] = useState(null);
   const [comments, setComments] = useState([]);
 
@@ -23,22 +19,17 @@ const Blog = () => {
   const [commentLoading, setCommentLoading] = useState(false);
   const [likeLoading, setLikeLoading] = useState(false);
   const [bookmarkLoading, setBookmarkLoading] = useState(false);
-
   const [name, setName] = useState('')
   const [content, setContent] = useState('')
-
   const [likeCount, setLikeCount] = useState(0);
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const [commentsLoading, setCommentsLoading] = useState(false);
-
 const fetchBlogData = async () => {
     try {
         setLoading(true);
         setError("");
-
         const { data } = await axios.get(`/api/blog/${id}`);
-
         if (data.success) {
             setData(data.blog);
         } else {
@@ -55,15 +46,12 @@ const fetchBlogData = async () => {
         setLoading(false);
     }
 };
-
 const fetchComments = async () => {
     setCommentsLoading(true);
-
     try {
         const { data } = await axios.post("/api/blog/comments", {
             blogId: id,
         });
-
         if (data.success) {
             setComments(data.comments || []);
         } else {
@@ -77,11 +65,9 @@ const fetchComments = async () => {
         setCommentsLoading(false);
     }
 };
-
 const fetchLikeData = async () => {
     try {
         const { data } = await axios.get(`/api/blog/like/${id}`);
-
         if (data.success) {
             setLikeCount(data.likeCount);
             setLiked(data.liked);
@@ -94,13 +80,11 @@ const fetchLikeData = async () => {
     );
 }
 };
-
 const fetchBookmarkStatus = async () => {
     if (!user) {
         setBookmarked(false);
         return;
     }
-
     try {
         const { data } = await axios.get(`/api/bookmark/status/${id}`);
 
@@ -113,22 +97,18 @@ const fetchBookmarkStatus = async () => {
         toast.error(error.response?.data?.message || error.message);
     }
 };
-
 const handleLike = async () => {
     if (!user) {
         toast.error("Please login to like this blog");
         return;
     }
-
     try {
         setLikeLoading(true);
-
         const { data } = await axios.post(`/api/blog/like/${id}`);
-
         if (data.success) {
             setLiked(data.liked);
             setLikeCount((prev) =>
-                data.liked ? prev + 1 : prev - 1
+            data.liked ? prev + 1 : prev - 1
             );
             await fetchBlogs();
         } else {
@@ -142,18 +122,14 @@ const handleLike = async () => {
         setLikeLoading(false);
     }
 };
-
 const handleBookmark = async () => {
     if (!user) {
         toast.error("Please login to bookmark this blog");
         return;
     }
-
     try {
         setBookmarkLoading(true);
-
         const { data } = await axios.post(`/api/bookmark/${id}`);
-
         if (data.success) {
             setBookmarked(data.bookmarked);
             toast.success(data.message);
@@ -169,24 +145,19 @@ const handleBookmark = async () => {
         setBookmarkLoading(false);
     }
 };
-
 const addComment = async (e) => {
     e.preventDefault();
-
     try {
         setCommentLoading(true);
-
         const { data } = await axios.post("/api/blog/add-comment", {
             blogId: id,
             name,
             content
         });
-
         if (data.success) {
             toast.success(data.message);
             setName('');
             setContent('');
-
             await fetchComments();
         } else {
             toast.error(data.message);
@@ -199,7 +170,6 @@ const addComment = async (e) => {
         setCommentLoading(false);
     }
 };
-
 useEffect(() => {
     const fetchData = async () => {
         await fetchBlogData();
@@ -210,31 +180,25 @@ useEffect(() => {
 
     fetchData();
 }, [id, user]);
-
 if (loading) {
     return <Loader />;
 }
-
 if (error || !data) {
     return (
         <div className="min-h-screen flex flex-col">
             <Navbar />
-
             <main className="flex-1 flex items-center justify-center px-5">
                 <div className="text-center max-w-md">
                     <div className="text-6xl mb-5">
                         📄
                     </div>
-
                     <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
                         Blog Not Found
                     </h2>
-
                     <p className="mt-3 text-gray-500 dark:text-gray-400">
                         {error ||
                             "The blog you are looking for does not exist or is no longer available."}
                     </p>
-
                     <button
                         onClick={() => window.history.back()}
                         className="mt-6 px-5 py-2.5 bg-primary text-white rounded-lg font-medium cursor-pointer hover:bg-primary/90 transition"
@@ -243,35 +207,29 @@ if (error || !data) {
                     </button>
                 </div>
             </main>
-
             <Footer />
         </div>
     );
 }
-
   return (
     <div className='relative'>
       <img src={assets.gradientBackground} alt="" className='absolute -top-50 -z-1 opacity-50' />
       <Navbar/>
 <div className="max-w-4xl mx-auto text-center pt-16 pb-10 px-5">
-
     {/* Category */}
     <span className="inline-block px-4 py-1.5  mb-5  text-sm font-medium text-primary bg-primary/10  border border-primary/20 rounded-full
     ">
         {data.category}
     </span>
-
     {/* Date */}
     <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
         Published on {Moment(data.createdAt).format("Do MMMM YYYY")}
     </p>
-
     {/* Title */}
     <h1 className=" text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white
     ">
         {data.title}
     </h1>
-
     {/* Subtitle */}
     {data.subTitle && (
         <p className=" mt-5 text-base sm:text-lg leading-relaxed text-gray-500  dark:text-gray-400 max-w-2xl mx-auto
@@ -279,7 +237,6 @@ if (error || !data) {
             {data.subTitle}
         </p>
     )}
-
     {/* Author */}
     {data.author ? (
         <Link
@@ -293,7 +250,6 @@ if (error || !data) {
                 className="  w-11 h-11 rounded-full object-cover border border-gray-200 dark:border-gray-700
                 "
             />
-
             <div className="text-left">
                 <p className=" text-sm font-semibold text-gray-900 dark:text-white
                 ">
@@ -313,17 +269,14 @@ if (error || !data) {
             Published by Admin
         </div>
     )}
-
 </div>
         {/* inline-block py-1 px-4 rounded-full mb-6 border text-sm border-primary/35 bg-primary/5 font-medium text-primary */}
-
         <div className='mx-5 max-w-5xl md:mx-auto my-10 mt-6 dark:text-gray-300'>
           <img
     src={data.image || assets.blog_icon} alt={data.title}  className='            w-full aspect-[16/9] object-cover rounded-2xl sm:rounded-3xl shadow-lg  border border-gray-100 dark:border-gray-800 hover:scale-[1.01]' />
           <div className='rich-text max-w-3xl mx-auto mt-12 px-1 text-gray-700 dark:text-gray-300 leading-8' dangerouslySetInnerHTML={{__html: data.description}}>
           </div>
           <div className="max-w-3xl mx-auto mt-8 flex items-center gap-3">
-
     <button
         onClick={handleLike} disabled={likeLoading}
         className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border transition-all cursor-pointer
@@ -341,7 +294,6 @@ if (error || !data) {
         <span className="font-medium">
             {likeCount}
         </span>
-
 <span>
     {likeLoading
         ? "Updating..."
@@ -350,7 +302,6 @@ if (error || !data) {
         : "Like"}
 </span>
     </button>
-
     <button
         onClick={handleBookmark} disabled={bookmarkLoading}
         className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border transition-all cursor-pointer
@@ -364,7 +315,6 @@ if (error || !data) {
         <span className="text-xl">
             🔖
         </span>
-
 <span className="font-medium">
     {bookmarkLoading
         ? "Updating..."
@@ -373,22 +323,17 @@ if (error || !data) {
         : "Bookmark"}
 </span>
     </button>
-
 </div>
-
             <div className='mt-14 mb-10 max-w-3xl mx-auto'>
 <div className="flex items-center justify-between mb-6">
-
     <h2 className="text-xl font-bold text-gray-900 dark:text-white">
         Comments
     </h2>
-
     <span
         className="  px-3 py-1  text-xs font-medium rounded-full bg-primary/10 text-primary
         "
     > {comments.length}
     </span>
-
 </div>
 <div className="flex flex-col gap-4">
     {commentsLoading ? (
@@ -427,21 +372,17 @@ if (error || !data) {
     ))}
 </div>
             </div>
-
               {/* Add comment Section */}
 <div
     className=" max-w-3xl mx-auto mt-16 p-6 sm:p-8 rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/60
     "
 >
-
     <h2 className="text-xl font-bold text-gray-900 dark:text-white">
         Leave a comment
     </h2>
-
     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 mb-6">
         Share your thoughts about this article.
     </p>
-
     {user && !isAdmin && (
     <div className="flex items-center gap-3 mb-5">
         <img
@@ -449,42 +390,35 @@ if (error || !data) {
             alt={user.name}
             className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-gray-700"
         />
-
         <div>
             <p className="font-semibold text-gray-900 dark:text-white">
                 {user.name}
             </p>
-
             <p className="text-xs text-gray-500 dark:text-gray-400">
                 @{user.username}
             </p>
         </div>
     </div>
 )}
-
 {isAdmin && (
     <div className="flex items-center gap-3 mb-5">
         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
             👑
         </div>
-
         <div>
             <p className="font-semibold text-gray-900 dark:text-white">
                 Admin
             </p>
-
             <p className="text-xs text-gray-500 dark:text-gray-400">
                 Posting as administrator
             </p>
         </div>
     </div>
 )}
-
     <form
         onSubmit={addComment}
         className="flex flex-col gap-4"
     >
-
 {!user && !isAdmin && (
     <input
         onChange={(e) => setName(e.target.value)}
@@ -495,7 +429,6 @@ if (error || !data) {
         className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
     />
 )}
-
         <textarea
             onChange={(e) => setContent(e.target.value)}
             value={content}
@@ -523,13 +456,10 @@ if (error || !data) {
         pt-10 border-t border-gray-200 dark:border-gray-800 text-center
     "
 >
-
     <p className="font-semibold text-gray-900 dark:text-white mb-5">
         Enjoyed this article?
     </p>
-
     <div className="flex justify-center gap-3">
-
         <button
 onClick={async () => {
     try {
@@ -544,7 +474,6 @@ onClick={async () => {
         >
             🔗 Copy Link
         </button>
-
 <button
     onClick={async () => {
         try {
@@ -564,18 +493,13 @@ onClick={async () => {
         }
     }}
     className="px-4 py-2 rounded-lg bg-primary text-white text-sm hover:bg-primary/90 transition cursor-pointer"
->
-    Share
-</button>
-
+> Share </button>
     </div>
-
 </div>
-            </div>
+        </div>
           </div>
           <Footer/>
     </div>
   ) 
 }
-
 export default Blog
