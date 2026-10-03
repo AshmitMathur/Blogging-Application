@@ -3,9 +3,7 @@ import { Link } from "react-router-dom";
 import { assets } from "../../../Assets/assets";
 import { useAppContext } from "../../../../context/AppContext";
 import { useTheme } from "../../../../context/ThemeContext";
-
 const Navbar = () => {
-
     const {
         user,
         isAdmin,
@@ -24,7 +22,6 @@ const Navbar = () => {
             h-18">
  {/* ================= LOGO + NAVIGATION ================= */}
 <div className="flex items-center">
-
     {/* Logo */}
     <Link
         to="/"
@@ -42,10 +39,8 @@ const Navbar = () => {
             "
         />
     </Link>
-
     {/* Navigation Links */}
     <div className="hidden md:flex items-center gap-2 ml-6">
-
         <Link
             to="/"
             className="
@@ -61,7 +56,6 @@ const Navbar = () => {
         >
             Home
         </Link>
-
         {user && !isAdmin && (
             <Link
                 to="/write"
@@ -79,9 +73,7 @@ const Navbar = () => {
                 Write
             </Link>
         )}
-
     </div>
-
 </div>
                 {/* ================= RIGHT SECTION ================= */}
                 <div className="flex items-center gap-2 sm:gap-3">
@@ -142,7 +134,6 @@ const Navbar = () => {
                     {/* ---------- NORMAL USER ---------- */}
                     {user && !isAdmin && (
                         <div className="relative group">
-
                             {/* Avatar */}
                             <button
                                 className="flex items-center gap-2
@@ -152,7 +143,6 @@ const Navbar = () => {
                                 dark:hover:bg-gray-800
                                 transition-all duration-200"
                             >
-
                                 <img
                                     src={
                                         user.avatar ||
@@ -167,14 +157,12 @@ const Navbar = () => {
                                     group-hover:border-primary/50
                                     transition-all duration-200"
                                 />
-
                                 <span className="hidden lg:block
                                 max-w-24 truncate
                                 text-sm font-medium
                                 text-gray-700 dark:text-gray-200">
                                     {user.name}
                                 </span>
-
                                 <span className="hidden lg:block
                                 text-xs text-gray-400
                                 group-hover:rotate-180
@@ -200,22 +188,17 @@ const Navbar = () => {
                                 <div className="px-4 py-3
                                 border-b border-gray-100
                                 dark:border-gray-800">
-
                                     <p className="text-sm font-semibold
                                     text-gray-900 dark:text-white
                                     truncate">
                                         {user.name}
                                     </p>
-
                                     <p className="text-xs
                                     text-gray-500 dark:text-gray-400
                                     truncate">
                                         @{user.username}
                                     </p>
-
                                 </div>
-
-
                                 {/* Profile */}
                                 <Link
                                     to={`/profile/${user.username}`}
@@ -231,8 +214,6 @@ const Navbar = () => {
                                     <span>👤</span>
                                     <span>Profile</span>
                                 </Link>
-
-
                                 {/* Logout */}
                                 <button
                                     onClick={logout}
@@ -248,13 +229,9 @@ const Navbar = () => {
                                     <span>↪</span>
                                     <span>Logout</span>
                                 </button>
-
                             </div>
-
                         </div>
                     )}
-
-
                     {/* ---------- ADMIN ---------- */}
                     {isAdmin && (
                         <>
@@ -289,8 +266,6 @@ const Navbar = () => {
                             </button>
                         </>
                     )}
-
-
                     {/* ---------- THEME ---------- */}
                     <button
                         onClick={toggleTheme}
@@ -309,13 +284,9 @@ const Navbar = () => {
                     >
                         {theme === "light" ? "🌙" : "☀️"}
                     </button>
-
                 </div>
-
             </div>
-
         </nav>
     );
 };
-
 export default Navbar;
