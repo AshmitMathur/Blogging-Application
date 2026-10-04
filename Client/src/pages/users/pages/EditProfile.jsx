@@ -5,12 +5,9 @@ import toast from "react-hot-toast";
 import Navbar from "../components/NavBar.jsx";
 import Footer from "../../../components/Footer.jsx";
 import { assets } from "../../../Assets/assets.js";
-
 const EditProfile = () => {
-
     const { axios, user, setUser } = useAppContext();
     const navigate = useNavigate();
-
     const [name, setName] = useState(user?.name || "");
     const [bio, setBio] = useState(user?.bio || "");
     const [avatar, setAvatar] = useState(user?.avatar || "");
@@ -18,15 +15,12 @@ const EditProfile = () => {
 
     const updateProfile = async (e) => {
         e.preventDefault();
-
         if (!name.trim()) {
             toast.error("Name cannot be empty");
             return;
         }
-
         try {
             setLoading(true);
-
             const { data } = await axios.put("/api/user/update", {
                 name,
                 bio,
@@ -34,42 +28,28 @@ const EditProfile = () => {
             });
 
             if (data.success) {
-
                 toast.success("Profile updated successfully");
-
                 setUser(data.user);
-
                 navigate(`/profile/${data.user.username}`);
-
             } else {
                 toast.error(data.message);
             }
-
         } catch (error) {
-
             toast.error(
                 error.response?.data?.message ||
                 error.message
             );
-
         } finally {
             setLoading(false);
         }
     };
-
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-
             <Navbar />
-
             <main className="px-4 py-12 sm:px-6 lg:px-8">
-
                 <div className="max-w-2xl mx-auto">
-
                     {/* Header */}
-
                     <div className="text-center mb-10">
-
                         <h1 className="
                             text-3xl
                             sm:text-4xl
@@ -79,7 +59,6 @@ const EditProfile = () => {
                         ">
                             Edit Profile
                         </h1>
-
                         <p className="
                             mt-3
                             text-gray-500
@@ -88,12 +67,8 @@ const EditProfile = () => {
                             Update your profile information and
                             let people know more about you.
                         </p>
-
                     </div>
-
-
                     {/* Card */}
-
                     <div className="
                         bg-white
                         dark:bg-gray-900
@@ -106,9 +81,7 @@ const EditProfile = () => {
                         dark:shadow-black/30
                         overflow-hidden
                     ">
-
                         {/* Profile Preview */}
-
                         <div className="
                             flex
                             flex-col
@@ -119,12 +92,10 @@ const EditProfile = () => {
                             border-gray-200
                             dark:border-gray-800
                         ">
-
                             <div className="
                                 relative
                                 group
                             ">
-
                                 <img
                                     src={
                                         avatar ||
@@ -148,9 +119,7 @@ const EditProfile = () => {
                                         group-hover:scale-105
                                     "
                                 />
-
                             </div>
-
                             <h2 className="
                                 mt-4
                                 text-xl
@@ -160,7 +129,6 @@ const EditProfile = () => {
                             ">
                                 {name || "Your Name"}
                             </h2>
-
                             <p className="
                                 mt-1
                                 text-sm
@@ -169,21 +137,14 @@ const EditProfile = () => {
                             ">
                                 @{user?.username}
                             </p>
-
                         </div>
-
-
                         {/* Form */}
-
                         <form
                             onSubmit={updateProfile}
                             className="p-6 sm:p-8 space-y-6"
                         >
-
                             {/* Name */}
-
                             <div>
-
                                 <label className="
                                     block
                                     text-sm
@@ -194,7 +155,6 @@ const EditProfile = () => {
                                 ">
                                     Full Name
                                 </label>
-
                                 <input
                                     type="text"
                                     value={name}
@@ -223,21 +183,15 @@ const EditProfile = () => {
                                         focus:ring-primary/10
                                     "
                                 />
-
                             </div>
-
-
                             {/* Bio */}
-
                             <div>
-
                                 <div className="
                                     flex
                                     justify-between
                                     items-center
                                     mb-2
                                 ">
-
                                     <label className="
                                         text-sm
                                         font-medium
@@ -246,16 +200,13 @@ const EditProfile = () => {
                                     ">
                                         Bio
                                     </label>
-
                                     <span className="
                                         text-xs
                                         text-gray-400
                                     ">
                                         {bio.length}/160
                                     </span>
-
                                 </div>
-
                                 <textarea
                                     value={bio}
                                     maxLength={160}
@@ -286,14 +237,9 @@ const EditProfile = () => {
                                         focus:ring-primary/10
                                     "
                                 />
-
                             </div>
-
-
                             {/* Avatar */}
-
                             <div>
-
                                 <label className="
                                     block
                                     text-sm
@@ -304,7 +250,6 @@ const EditProfile = () => {
                                 ">
                                     Avatar URL
                                 </label>
-
                                 <input
                                     type="url"
                                     value={avatar}
@@ -369,5 +314,4 @@ const EditProfile = () => {
         </div>
     );
 };
-
 export default EditProfile;
