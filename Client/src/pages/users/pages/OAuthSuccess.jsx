@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
 import { useAppContext } from "../../../../context/AppContext";
 import toast from "react-hot-toast";
-
 const OAuthSuccess = () => {
-
     const {
         setAuthToken,
         fetchCurrentUser,
