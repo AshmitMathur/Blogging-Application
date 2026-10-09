@@ -7,7 +7,6 @@ import Loader from "../../../components/Loader.jsx";
 import { assets } from "../../../Assets/assets.js";
 import toast from "react-hot-toast";
 import BlogCard from "../../../components/BlogCard.jsx";
-
 const Profile = () => {
     const { username } = useParams();
     const navigate = useNavigate();
@@ -16,7 +15,6 @@ const Profile = () => {
         axios,
         user: currentUser,
     } = useAppContext();
-
     const [user, setUser] = useState(null);
     const [blogs, setBlogs] = useState([]);
     const [likedBlogs, setLikedBlogs] = useState([]);
@@ -26,11 +24,9 @@ const Profile = () => {
     const [error, setError] = useState(false);
     const [likedBlogsLoading, setLikedBlogsLoading] = useState(false);
     const [bookmarkedBlogsLoading, setBookmarkedBlogsLoading] = useState(false);
-
     const fetchProfile = async () => {
         try {
             const { data } = await axios.get(`/api/user/${username}`);
-
             if (data.success) {
                 setUser(data.user);
                 setBlogs(data.blogs);
@@ -46,10 +42,8 @@ const Profile = () => {
         setLoading(false);
     }
     };
-
 const fetchLikedBlogs = async () => {
     setLikedBlogsLoading(true);
-
     try {
         const { data } = await axios.get("/api/blog/liked");
 
@@ -60,7 +54,6 @@ const fetchLikedBlogs = async () => {
         }
     } catch (error) {
         console.error("Fetch Liked Blogs Error:", error);
-
         toast.error(
             error.response?.data?.message || "Failed to load liked blogs"
         );
@@ -68,13 +61,10 @@ const fetchLikedBlogs = async () => {
         setLikedBlogsLoading(false);
     }
 };
-
 const fetchBookmarkedBlogs = async () => {
     setBookmarkedBlogsLoading(true);
-
     try {
         const { data } = await axios.get("/api/bookmark/my");
-
         if (data.success) {
             setBookmarkedBlogs(
                 (data.bookmarks || []).map(
@@ -86,7 +76,6 @@ const fetchBookmarkedBlogs = async () => {
         }
     } catch (error) {
         console.error("Fetch Bookmarked Blogs Error:", error);
-
         toast.error(
             error.response?.data?.message ||
             "Failed to load bookmarked blogs"
@@ -95,7 +84,6 @@ const fetchBookmarkedBlogs = async () => {
         setBookmarkedBlogsLoading(false);
     }
 };
-
 useEffect(() => {
     const loadProfile = async () => {
         await fetchProfile();
@@ -105,19 +93,15 @@ useEffect(() => {
             await fetchBookmarkedBlogs();
         }
     };
-
     loadProfile();
 }, [username, currentUser]);
-
 if (loading) {
     return <Loader />;
 }
-
 if (error || !user) {
     return (
         <>
             <Navbar />
-
             <main className="min-h-[70vh] flex items-center justify-center bg-gray-50 dark:bg-black px-5">
                 <div className="text-center">
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
