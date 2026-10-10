@@ -3,7 +3,6 @@ import { useAppContext } from "../../../../context/AppContext";
 import toast from "react-hot-toast";
 import { useTheme } from "../../../../context/ThemeContext";
 import { assets } from "../../../Assets/assets";
-
 const UserLogin = () => {
 const {
     axios, 
@@ -13,51 +12,40 @@ const {
     fetchCurrentUser, 
     fetchMyBlogs 
 } = useAppContext();
-
     const {theme, toggleTheme} = useTheme();
-
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
-
     const handleChange = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
         });
     };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
             const { data } = await axios.post(
                 "/api/auth/login",
                 formData
             );
-
             if (data.success) {
                 toast.success(data.message);
-
     setAuthToken(data.token);
     setUser(data.user);
-
                 await fetchCurrentUser();
                 await fetchMyBlogs();
-
                 navigate("/");
             } else {
                 toast.error(data.message);
             }
-
         } catch (error) {
             toast.error(
                 error.response?.data?.message || error.message
             );
         }
     };
-
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-black px-5">
             <img
@@ -98,12 +86,10 @@ const {
                             className="w-full p-3 border border-gray-300 rounded-lg outline-none dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
                         />
                     </div>
-
                     <div>
                         <label className="block mb-2 dark:text-gray-300">
                             Password
                         </label>
-
                         <input
                             name="password"
                             type="password"
@@ -114,7 +100,6 @@ const {
                             className="w-full p-3 border border-gray-300 rounded-lg outline-none dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
                         />
                     </div>
-
                     <button
                         type="submit"
                         className="w-full py-3 bg-primary text-white rounded-lg cursor-pointer hover:opacity-90"
@@ -123,14 +108,11 @@ const {
                     </button>
                     <div className="flex items-center gap-3 my-5">
     <div className="flex-1 h-px bg-gray-300 dark:bg-gray-700"></div>
-
     <span className="text-sm text-gray-500 dark:text-gray-400">
         OR
     </span>
-
     <div className="flex-1 h-px bg-gray-300 dark:bg-gray-700"></div>
 </div>
-
 <button
     type="button"
     onClick={() => {
@@ -159,5 +141,4 @@ const {
         </div>
     );
 };
-
 export default UserLogin;
