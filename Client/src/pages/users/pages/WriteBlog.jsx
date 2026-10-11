@@ -7,12 +7,9 @@ import Footer from "../../../components/Footer.jsx";
 import toast from "react-hot-toast";
 import { parse } from "marked";
 import { blogCategories } from "../../../Assets/assets.js";
-
-
 const WriteBlog = () => {
     const { axios , fetchBlogs } = useAppContext();
     const navigate = useNavigate();
-
     const [title, setTitle] = useState("");
     const [subTitle, setSubTitle] = useState("");
     const [image, setImage] = useState(null);
@@ -20,25 +17,19 @@ const WriteBlog = () => {
     const [loading, setLoading] = useState(false);
     const [category, setCategory] = useState("");
     const [isGenerating, setIsGenerating] = useState(false);
-    
-
     const editorRef = useRef(null);
     const quillRef = useRef(null);
     const imageInputRef = useRef(null);
-
     const [contentLength, setContentLength] = useState(0);
-
 const MAX_TITLE_LENGTH = 150;
 const MAX_SUBTITLE_LENGTH = 250;
 const MAX_CONTENT_LENGTH = 10000;
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
-
 useEffect(() => {
     if (!quillRef.current && editorRef.current) {
         quillRef.current = new Quill(editorRef.current, {
             theme: "snow",
         });
-
         quillRef.current.on("text-change", () => {
             setContentLength(
                 quillRef.current.getText().trim().length
@@ -46,13 +37,11 @@ useEffect(() => {
         });
     }
 }, []);
-
 useEffect(() => {
     if (!image) {
         setImagePreview("");
         return;
     }
-
     const previewUrl = URL.createObjectURL(image);
     setImagePreview(previewUrl);
 
@@ -60,42 +49,33 @@ useEffect(() => {
         URL.revokeObjectURL(previewUrl);
     };
 }, [image]);
-
 const generateContent = async () => {
     const trimmedTitle = title.trim();
-
     if (!trimmedTitle) {
         return toast.error("Please enter a title");
     }
-
     if (trimmedTitle.length > MAX_TITLE_LENGTH) {
         return toast.error(
             `Title cannot exceed ${MAX_TITLE_LENGTH} characters`
         );
     }
-
     try {
         setIsGenerating(true);
-
         const { data } = await axios.post(
             "/api/blog/generate",
             {
                 prompt: trimmedTitle,
             }
         );
-
 if (data.success) {
     quillRef.current.root.innerHTML = parse(data.content);
-
     setContentLength(
         quillRef.current.getText().trim().length
     );
-
     toast.success("Content generated successfully");
 }else {
             toast.error(data.message);
         }
-
     } catch (error) {
         toast.error(
             error.response?.data?.message || "Unable to generate content"
@@ -104,76 +84,59 @@ if (data.success) {
         setIsGenerating(false);
     }
 };
-
-
 const handleSubmit = async (e) => {
     e.preventDefault();
-
     const trimmedTitle = title.trim();
     const trimmedSubTitle = subTitle.trim();
-
     const description = quillRef.current?.root.innerHTML || "";
-
     const plainTextDescription = description
         .replace(/<(.|\n)*?>/g, "")
         .trim();
-
     if (!trimmedTitle) {
         toast.error("Title is required");
         return;
     }
-
     if (trimmedTitle.length > MAX_TITLE_LENGTH) {
         toast.error(
             `Title cannot exceed ${MAX_TITLE_LENGTH} characters`
         );
         return;
     }
-
     if (trimmedSubTitle.length > MAX_SUBTITLE_LENGTH) {
         toast.error(
             `Subtitle cannot exceed ${MAX_SUBTITLE_LENGTH} characters`
         );
         return;
     }
-
     if (!plainTextDescription) {
         toast.error("Blog description is required");
         return;
     }
-
     if (plainTextDescription.length > MAX_CONTENT_LENGTH) {
         toast.error(
             `Blog content cannot exceed ${MAX_CONTENT_LENGTH} characters`
         );
         return;
     }
-
     if (!category.trim()) {
         toast.error("Please select a category");
         return;
     }
-
     if (!image) {
         toast.error("Please select a cover image");
         return;
     }
-
     if (!image.type.startsWith("image/")) {
         toast.error("Please select a valid image file");
         return;
     }
-
     if (image.size > MAX_IMAGE_SIZE) {
         toast.error("Cover image must be smaller than 5 MB");
         return;
     }
-
     try {
         setLoading(true);
-
         const formData = new FormData();
-
         formData.append(
             "blog",
             JSON.stringify({
@@ -184,34 +147,26 @@ const handleSubmit = async (e) => {
                 isPublished: true
             })
         );
-
         formData.append("image", image);
-
         const { data } = await axios.post(
             "/api/blog/add",
             formData
         );
-
         if (data.success) {
             toast.success(data.message);
-
             await fetchBlogs();
-
             setTitle("");
             setSubTitle("");
             setCategory("");
             setImage(null);
-
 if (quillRef.current) {
     quillRef.current.root.innerHTML = "";
     setContentLength(0);
 }
-
             navigate("/");
         } else {
             toast.error(data.message);
         }
-
     } catch (error) {
         toast.error(
             error.response?.data?.message || "Unable to publish blog"
@@ -220,8 +175,6 @@ if (quillRef.current) {
         setLoading(false);
     }
 };
-
-
     return (
         <>
             <Navbar />
@@ -242,7 +195,6 @@ if (quillRef.current) {
     <label className="font-medium dark:text-gray-300">
         Title
     </label>
-
     <span className="text-xs text-gray-400">
         {title.length}/{MAX_TITLE_LENGTH}
     </span>
@@ -263,12 +215,10 @@ if (quillRef.current) {
     <label className="font-medium dark:text-gray-300">
         Subtitle
     </label>
-
     <span className="text-xs text-gray-400">
         {subTitle.length}/{MAX_SUBTITLE_LENGTH}
     </span>
 </div>
-
                         <input
                             type="text"
                             value={subTitle}
@@ -283,30 +233,25 @@ if (quillRef.current) {
                         <label className="block font-medium mb-2 dark:text-gray-300">
                             Cover Image
                         </label>
-
 <input ref={imageInputRef}
     type="file"
     accept="image/*"
     onChange={(e) => {
         const selectedImage = e.target.files[0];
-
         if (!selectedImage) {
             setImage(null);
             return;
         }
-
         if (!selectedImage.type.startsWith("image/")) {
             toast.error("Please select a valid image file");
             e.target.value = "";
             return;
         }
-
         if (selectedImage.size > MAX_IMAGE_SIZE) {
             toast.error("Cover image must be smaller than 5 MB");
             e.target.value = "";
             return;
         }
-
         setImage(selectedImage);
     }}
                             className="w-full p-3 border border-gray-300 rounded-lg dark:bg-zinc-900 dark:border-zinc-700 dark:text-gray-300"
@@ -317,7 +262,6 @@ if (quillRef.current) {
         <p className="text-sm text-gray-500 mb-2">
             Selected: {image.name}
         </p>
-
         {imagePreview && (
             <img
                 src={imagePreview}
@@ -340,32 +284,26 @@ if (quillRef.current) {
 </button>
     </div>
 )}
-                    </div>
-
+</div>
 {/* Content */}
 <div>
 <div className="flex items-center justify-between mb-2">
     <p className="font-medium dark:text-gray-300">
         Content
     </p>
-
 <span className="text-xs text-gray-400">
     {contentLength}/{MAX_CONTENT_LENGTH}
 </span>
 </div>
-
     <div className="w-full max-w-3xl h-74 pb-16 sm:pb-10 pt-2 relative">
-        
         {/* Quill Editor */}
         <div ref={editorRef}></div>
-
         {/* Loading Overlay */}
         {isGenerating && (
             <div className="absolute inset-0 z-50 bg-gray-200/50 dark:bg-gray-800/50 flex items-center justify-center">
                 <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
             </div>
         )}
-
         {/* Generate With AI Button */}
         <button
             type="button"
@@ -383,7 +321,6 @@ if (quillRef.current) {
     <label className="block font-medium mb-2 dark:text-gray-300">
         Category
     </label>
-
                 <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
@@ -400,7 +337,6 @@ if (quillRef.current) {
                     ))}
                 </select>
 </div>
-
                     {/* Submit */}
                     <button
                         type="submit"
@@ -413,15 +349,10 @@ if (quillRef.current) {
     ? "Generating..."
     : "Publish Blog"}
                     </button>
-
                 </form>
             </div>
-
             <Footer />
         </>
     );
 };
-
-
-
 export default WriteBlog;
