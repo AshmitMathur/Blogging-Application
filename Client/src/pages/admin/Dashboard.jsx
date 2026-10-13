@@ -4,9 +4,7 @@ import BlogTableItem from './BlogTableItem';
 import { useAppContext } from '../../../context/AppContext';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-
 const Dashboard = () => {
-
     const [dashboardData, setDashboardData] = useState({
         blogs: 0,
         comments: 0,
@@ -15,14 +13,11 @@ const Dashboard = () => {
         recentBlogs: []
     });
     const [loading, setLoading] = useState(true);
-
     const { axios } = useAppContext();
     const navigate = useNavigate();
-
 const fetchDashboard = async () => {
     try {
         const { data } = await axios.get("/api/admin/dashboard");
-
         if (data.success) {
             setDashboardData(data.dashboardData);
         } else {
@@ -36,7 +31,6 @@ const fetchDashboard = async () => {
         setLoading(false);
     }
 };
-
     useEffect(() => {
         fetchDashboard();
     }, []);
@@ -224,5 +218,4 @@ const fetchDashboard = async () => {
         </div>
     );
 };
-
 export default Dashboard;
