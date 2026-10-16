@@ -3,28 +3,19 @@ import { blogCategories } from '../Assets/assets'
 import { motion } from "motion/react"
 import BlogCard from './BlogCard';
 import { useAppContext } from '../../context/AppContext';
-
-
 const BlogList = () => {
-
     const [menu, setmenu] = useState("All");
-
     const {
         blogs,
         input,
         fetchBlogs,
         blogsLoading
     } = useAppContext();
-
-
     useEffect(() => {
         fetchBlogs(input, menu);
     }, [input, menu]);
-
-
     return (
         <div>
-
             <div className='flex justify-center gap-4 sm:gap-8 my-10 relative'>
                 {blogCategories.map((item) => (
                     <div key={item} className='relative'>
@@ -55,8 +46,6 @@ const BlogList = () => {
                     </div>
                 ))}
             </div>
-
-
             {blogsLoading ? (
 
                 <div className="mb-24 mx-8 sm:mx-16 xl:mx-40 py-16 text-center">
@@ -64,7 +53,6 @@ const BlogList = () => {
                         Loading blogs...
                     </p>
                 </div>
-
             ) : blogs.length === 0 ? (
 
                 <div className="mb-24 mx-8 sm:mx-16 xl:mx-40 py-16 text-center">
@@ -72,9 +60,7 @@ const BlogList = () => {
                         No blogs found matching your search and category.
                     </p>
                 </div>
-
             ) : (
-
                 <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8 mb-24 mx-8 sm:mx-16 xl:mx-40'>
                     {blogs.map((blog) => (
                         <BlogCard
@@ -83,12 +69,8 @@ const BlogList = () => {
                         />
                     ))}
                 </div>
-
             )}
-
         </div>
     )
 }
-
-
 export default BlogList
