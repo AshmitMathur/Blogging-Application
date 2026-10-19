@@ -8,10 +8,8 @@ export const getAllNewsletterSubscribers = async (req, res) => {
             success: true,
             subscribers,
         });
-
     } catch (error) {
         console.error("Get Newsletter Subscribers Error:", error);
-
         return res.json({
             success: false,
             message: error.message,
@@ -35,7 +33,6 @@ export const deleteNewsletterSubscriber = async (req, res) => {
         });
     } catch (error) {
         console.error("Delete Newsletter Subscriber Error:", error);
-
         return res.json({
             success: false,
             message: error.message,

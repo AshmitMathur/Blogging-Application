@@ -56,7 +56,6 @@ export const getDashboard = async(req, res)=> {
         const comments = await Comment.countDocuments();
         const drafts = await Blog.countDocuments({isPublished: false});
         const newsletterSubscribers = await Newsletter.countDocuments();
-
         const dashboardData = {
             blogs, comments, drafts, recentBlogs, newsletterSubscribers
         }

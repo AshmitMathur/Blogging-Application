@@ -13,7 +13,6 @@ export const register = async (req, res) => {
         }
         const passwordRegex =
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
         if (!passwordRegex.test(password)) {
             return res.json({
                 success: false,
@@ -89,7 +88,6 @@ export const getCurrentUser = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const {email, password} = req.body;
-
         if(!email || !password){
             return res.json({
                 success: false,
@@ -151,7 +149,6 @@ export const googleLogin = async (req, res) => {
         res.redirect(authUrl);
     } catch (error) {
         console.error("Google Login Error:", error);
-
         res.status(500).json({
             success: false,
             message: "Unable to start Google authentication",
@@ -198,7 +195,6 @@ export const googleCallback = async (req, res) => {
             let baseUsername = name
                 .toLowerCase()
                 .replace(/[^a-z0-9]/g, "");
-
             if (!baseUsername) {
                 baseUsername = "user";
             }
