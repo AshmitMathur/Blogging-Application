@@ -6,9 +6,7 @@ import userAuth from "../middlewares/userAuth.js"
 import anyAuth from '../middlewares/anyauth.js';
 import OptAuth from '../middlewares/Optional.js'
 import { toggleLike , getLikeInfo, getMyLikedBlogs } from '../controllers/likeController.js';
-
 const blogRouter = express.Router();
-
 blogRouter.post("/add", anyAuth,  upload.single('image'), addBlog);
 blogRouter.put("/update/:blogId", anyAuth, upload.single("image"), updateBlog);
 blogRouter.get("/liked", userAuth, getMyLikedBlogs);
@@ -22,6 +20,4 @@ blogRouter.post("/toggle-publish", auth, togglePublish);
 blogRouter.post("/add-comment", OptAuth, addComment);
 blogRouter.post("/comments", getBlogComments);
 blogRouter.post("/generate", anyAuth, generateContent);
-
-
 export default blogRouter;
