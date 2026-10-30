@@ -1,15 +1,11 @@
-import React from 'react'
 import { assets } from '../Assets/assets'
 import { useAppContext } from '../../context/AppContext'
 import { useTheme } from '../../context/ThemeContext'
-
 const Navbar = () => {
   const { navigate, user, isAdmin, logout, token } = useAppContext();
   const { theme, toggleTheme } = useTheme();
-
   return (
     <div className='flex justify-between items-center py-5 mx-8 sm:mx-20 xl:mx-32'>
-
       {/* Logo */}
       <img
         onClick={() => navigate('/')}
@@ -17,9 +13,7 @@ const Navbar = () => {
         alt="logo"
         className='w-32 sm:w-44 cursor-pointer dark:invert'
       />
-
       <div className='flex items-center gap-4'>
-
         {/* NORMAL USER LOGGED OUT */}
         {!user && !isAdmin && (
           <>
@@ -34,7 +28,6 @@ const Navbar = () => {
                 alt="arrow"
               />
             </button>
-
             <button
               onClick={() => navigate('/admin')}
               className='flex items-center gap-2 rounded-full text-sm cursor-pointer bg-primary text-white px-5 py-2.5 hover:scale-105 transition-all'
@@ -48,7 +41,6 @@ const Navbar = () => {
             </button>
           </>
         )}
-
         {/* NORMAL USER LOGGED IN */}
         {user && !isAdmin && (
           <>
@@ -58,7 +50,6 @@ const Navbar = () => {
             >
               Profile
             </button>
-
             <button
               onClick={logout}
               className='flex items-center gap-2 rounded-full text-sm cursor-pointer bg-red-500 text-white px-5 py-2.5 hover:scale-105 transition-all'
@@ -67,7 +58,6 @@ const Navbar = () => {
             </button>
           </>
         )}
-
         {/* ADMIN LOGGED IN */}
         {isAdmin && (
           <>
@@ -82,7 +72,6 @@ const Navbar = () => {
                 alt="arrow"
               />
             </button>
-
             <button
               onClick={logout}
               className='flex items-center gap-2 rounded-full text-sm cursor-pointer bg-red-500 text-white px-5 py-2.5'
@@ -91,7 +80,6 @@ const Navbar = () => {
             </button>
           </>
         )}
-
         {/* THEME BUTTON */}
         <button
           onClick={toggleTheme}
@@ -108,10 +96,8 @@ const Navbar = () => {
         >
           {theme === "light" ? "🌙" : "☀️"}
         </button>
-
       </div>
     </div>
   )
 }
-
 export default Navbar
