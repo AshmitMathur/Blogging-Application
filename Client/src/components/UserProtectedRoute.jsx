@@ -1,4 +1,3 @@
-import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAppContext } from "../../context/AppContext";
 const UserProtectedRoute = () => {
@@ -13,7 +12,6 @@ const UserProtectedRoute = () => {
             />
         );
     }
-
     return <Outlet />;
 };
 export default UserProtectedRoute;
