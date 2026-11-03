@@ -1,27 +1,22 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { assets, blogCategories } from "../../Assets/assets";
 import Quill from "quill";
 import { useAppContext } from "../../../context/AppContext";
 import toast from "react-hot-toast";
 import { parse } from "marked";
-
 const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
     const { axios, navigate, fetchBlogs, fetchMyBlogs, isAdmin } = useAppContext();
-
     const [isAdding, setIsAdding] = useState(false);
     const [loading, setLoading] = useState(false);
-
     const editorRef = useRef(null);
     const quillRef = useRef(null);
     const imageInputRef = useRef(null);
-
     const [image, setImage] = useState(null);
     const [existingImage, setExistingImage] = useState("");
     const [title, setTitle] = useState("");
     const [subTitle, setSubTitle] = useState("");
     const [category, setCategory] = useState("");
     const [isPublished, setIsPublished] = useState(false);
-
     useEffect(() => {
         if (!quillRef.current && editorRef.current) {
             quillRef.current = new Quill(editorRef.current, {
@@ -29,30 +24,23 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
             });
         }
     }, []);
-
     useEffect(() => {
         if (!initialData || !quillRef.current) return;
-
         setTitle(initialData.title);
         setSubTitle(initialData.subTitle);
         setCategory(initialData.category);
         setIsPublished(initialData.isPublished);
         setExistingImage(initialData.image);
-
         quillRef.current.root.innerHTML = initialData.description;
     }, [initialData]);
-
     const onSubmitHandler = async (e) => {
         e.preventDefault();
-
         if (mode === "add" && !image) {
             toast.error("Please select an image.");
             return;
         }
-
         try {
             setIsAdding(true);
-
             const blog = {
                 title,
                 subTitle,
@@ -60,16 +48,12 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                 category,
                 isPublished,
             };
-
             const formData = new FormData();
             formData.append("blog", JSON.stringify(blog));
-
             if (image) {
                 formData.append("image", image);
             }
-
             let data;
-
             if (mode === "add") {
                 const response = await axios.post("/api/blog/add", formData);
                 data = response.data;
@@ -80,7 +64,6 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                 );
                 data = response.data;
             }
-
             if (data.success) {
                 toast.success(data.message);
                 await fetchBlogs();
@@ -90,14 +73,12 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                     navigate(redirectTo);
                     return;
                 }
-
                 setImage(null);
                 setExistingImage("");
                 setTitle("");
                 setSubTitle("");
                 setCategory("Startup");
                 setIsPublished(false);
-
                 if (quillRef.current) {
                     quillRef.current.root.innerHTML = "";
                 }
@@ -120,17 +101,14 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
             setIsAdding(false);
         }
     };
-
     const generateContent = async () => {
         if (!title) return toast.error("Please enter a Title");
-
         try {
             setLoading(true);
 
             const { data } = await axios.post("/api/blog/generate", {
                 prompt: title,
             });
-
             if (data.success) {
                 quillRef.current.root.innerHTML = parse(data.content);
             } else {
@@ -142,7 +120,6 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
             setLoading(false);
         }
     };
-
     return (
         <form
             onSubmit={onSubmitHandler}
@@ -159,14 +136,12 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                             : "Update the details of your blog post."}
                     </p>
                 </div>
-
                 <div className="rounded-xl bg-white p-5 shadow-sm dark:bg-gray-900 sm:p-8">
                     <div className="space-y-6">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
                                 Blog Thumbnail
                             </label>
-
                             <label
                                 htmlFor="image"
                                 className="mt-3 flex h-40 w-full max-w-md cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 transition hover:border-primary hover:bg-blue-50/50 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-primary dark:hover:bg-gray-800/70"
@@ -180,7 +155,6 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                                     alt="Blog thumbnail"
                                     className="h-full w-full object-contain p-3"
                                 />
-
                                 <input
                                     ref={imageInputRef}
                                     id="image"
@@ -190,12 +164,10 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                                     onChange={(e) => setImage(e.target.files[0])}
                                 />
                             </label>
-
                             <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">
                                 Click the box above to upload a thumbnail image.
                             </p>
                         </div>
-
                         <div>
                             <label
                                 htmlFor="title"
@@ -203,7 +175,6 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                             >
                                 Blog Title
                             </label>
-
                             <input
                                 id="title"
                                 type="text"
@@ -214,7 +185,6 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                                 className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-700 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-500"
                             />
                         </div>
-
                         <div>
                             <label
                                 htmlFor="subtitle"
@@ -222,7 +192,6 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                             >
                                 Sub Title
                             </label>
-
                             <input
                                 id="subtitle"
                                 type="text"
@@ -233,7 +202,6 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                                 className="mt-2 w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-700 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-500"
                             />
                         </div>
-
                         <div>
                             <div className="mb-2 flex items-center justify-between">
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -243,13 +211,11 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                                     Write your content below
                                 </span>
                             </div>
-
                             <div className="relative overflow-hidden rounded-lg border border-gray-300 bg-white dark:border-gray-700 dark:bg-gray-800">
                                 <div
                                     ref={editorRef}
                                     className="min-h-[280px]"
                                 />
-
                                 {loading && (
                                     <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/70 dark:bg-gray-900/70">
                                         <div className="flex flex-col items-center gap-3">
@@ -260,7 +226,6 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                                         </div>
                                     </div>
                                 )}
-
                                 <div className="flex justify-end border-t border-gray-200 bg-gray-50 p-2 dark:border-gray-700 dark:bg-gray-800">
                                     <button
                                         type="button"
@@ -273,7 +238,6 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                                 </div>
                             </div>
                         </div>
-
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                             <div>
                                 <label
@@ -282,7 +246,6 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                                 >
                                     Blog Category
                                 </label>
-
                                 <select
                                     id="category"
                                     value={category}
@@ -292,7 +255,6 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                                     <option value="" disabled>
                                         Select a Category
                                     </option>
-
                                     {blogCategories.map((item, index) => (
                                         <option key={index} value={item}>
                                             {item}
@@ -300,7 +262,6 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                                     ))}
                                 </select>
                             </div>
-
                             <div className="flex items-center">
                                 <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800">
                                     <input
@@ -309,7 +270,6 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                                         onChange={(e) => setIsPublished(e.target.checked)}
                                         className="h-4 w-4 cursor-pointer accent-primary"
                                     />
-
                                     <div>
                                         <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
                                             Publish Now
@@ -321,7 +281,6 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
                                 </label>
                             </div>
                         </div>
-
                         <div className="flex justify-end border-t border-gray-200 pt-6 dark:border-gray-700">
                             <button
                                 type="submit"
@@ -343,5 +302,4 @@ const BlogForm = ({ mode = "add", initialData = null, blogId, redirectTo }) => {
         </form>
     );
 };
-
 export default BlogForm;
